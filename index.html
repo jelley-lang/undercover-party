@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>誰是臥底 Online</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --background: #111322;
+      --card: rgba(31, 34, 58, 0.94);
+      --card-light: rgba(255, 255, 255, 0.07);
+      --primary: #8d78ff;
+      --primary-dark: #715be8;
+      --secondary: #43d9b8;
+      --danger: #ff758f;
+      --text: #ffffff;
+      --muted: #aaaec4;
+      --border: rgba(255, 255, 255, 0.12);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 22px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text);
+      font-family:
+        "Microsoft JhengHei",
+        "PingFang TC",
+        Arial,
+        sans-serif;
+      background:
+        radial-gradient(
+          circle at top left,
+          rgba(130, 92, 255, 0.35),
+          transparent 36%
+        ),
+        radial-gradient(
+          circle at bottom right,
+          rgba(52, 212, 181, 0.22),
+          transparent 34%
+        ),
+        var(--background);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(100%, 470px);
+    }
+
+    .card {
+      padding: 30px 24px;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background: var(--card);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
+      backdrop-filter: blur(18px);
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 16px;
+      display: grid;
+      place-items: center;
+      border-radius: 22px;
+      font-size: 37px;
+      background:
+        linear-gradient(
+          145deg,
+          var(--primary),
+          #c176f1
+        );
+      box-shadow:
+        0 14px 32px rgba(141, 120, 255, 0.32);
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 29px;
+    }
+
+    h2 {
+      margin-bottom: 18px;
+      font-size: 23px;
+    }
+
+    .subtitle {
+      margin-bottom: 28px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    .field-label {
+      display: block;
+      margin: 0 0 9px;
+      color: #d5d7e4;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px 16px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--text);
+      font-size: 16px;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    input::placeholder {
+      color: #7f8298;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow:
+        0 0 0 4px rgba(141, 120, 255, 0.14);
+    }
+
+    .button {
+      width: 100%;
+      margin-top: 13px;
+      padding: 15px 18px;
+      border: 0;
+      border-radius: 15px;
+      color: white;
+      font-weight: 800;
+      transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button:active {
+      transform: scale(0.985);
+    }
+
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+      transform: none;
+    }
+
+    .button-primary {
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+    }
+
+    .button-secondary {
+      background:
+        linear-gradient(
+          135deg,
+          #2cb995,
+          var(--secondary)
+        );
+      color: #071b18;
+    }
+
+    .button-danger {
+      background: rgba(255, 117, 143, 0.14);
+      color: #ff9aae;
+      border: 1px solid rgba(255, 117, 143, 0.3);
+    }
+
+    .divider {
+      margin: 23px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #7f8298;
+      font-size: 13px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .join-row {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      gap: 10px;
+    }
+
+    .join-row .button {
+      margin-top: 0;
+    }
+
+    .status {
+      min-height: 22px;
+      margin-top: 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .status.error {
+      color: #ff9aae;
+    }
+
+    .status.success {
+      color: #63e4c6;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .room-code-box {
+      padding: 20px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      text-align: center;
+      background: var(--card-light);
+    }
+
+    .room-code-label {
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .room-code {
+      letter-spacing: 7px;
+      font-size: 34px;
+      font-weight: 900;
+    }
+
+    .copy-button {
+      margin-top: 10px;
+      padding: 8px 14px;
+      border: 0;
+      border-radius: 999px;
+      color: #d9d3ff;
+      background: rgba(141, 120, 255, 0.16);
+    }
+
+    .lobby-header {
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .player-count {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .player-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .player {
+      padding: 14px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--card-light);
+    }
+
+    .player-main {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .avatar {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: rgba(141, 120, 255, 0.2);
+      font-size: 20px;
+    }
+
+    .player-name {
+      font-weight: 800;
+    }
+
+    .player-you {
+      margin-left: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .host-badge {
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(255, 207, 85, 0.16);
+      color: #ffd76e;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .waiting-box {
+      padding: 15px;
+      margin-bottom: 17px;
+      border-radius: 15px;
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 420px) {
+      .card {
+        padding: 27px 19px;
+      }
+
+      .join-row {
+        grid-template-columns: 1fr;
+      }
+
+      .room-code {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <!-- 首頁 -->
+    <section
+      id="homePage"
+      class="card"
+    >
+      <div class="logo">🕵️</div>
+
+      <h1>誰是臥底 Online</h1>
+
+      <p class="subtitle">
+        建立房間，邀請最多三位朋友加入，<br>
+        看看誰能把謊話說得最像真的。
+      </p>
+
+      <label
+        class="field-label"
+        for="playerName"
+      >
+        你的暱稱
+      </label>
+
+      <input
+        id="playerName"
+        maxlength="12"
+        autocomplete="nickname"
+        placeholder="例如：Cathy"
+      >
+
+      <button
+        id="createRoomButton"
+        class="button button-primary"
+        type="button"
+      >
+        建立房間
+      </button>
+
+      <div class="divider">
+        或加入朋友的房間
+      </div>
+
+      <div class="join-row">
+        <input
+          id="roomCodeInput"
+          maxlength="6"
+          inputmode="numeric"
+          placeholder="輸入六位數房號"
+        >
+
+        <button
+          id="joinRoomButton"
+          class="button button-secondary"
+          type="button"
+        >
+          加入
+        </button>
+      </div>
+
+      <div
+        id="homeStatus"
+        class="status"
+      >
+        正在連接遊戲伺服器……
+      </div>
+    </section>
+
+    <!-- 房間大廳 -->
+    <section
+      id="lobbyPage"
+      class="card hidden"
+    >
+      <div class="room-code-box">
+        <div class="room-code-label">
+          房間號碼
+        </div>
+
+        <div
+          id="roomCodeDisplay"
+          class="room-code"
+        >
+          000000
+        </div>
+
+        <button
+          id="copyRoomButton"
+          class="copy-button"
+          type="button"
+        >
+          複製房號
+        </button>
+      </div>
+
+      <div class="lobby-header">
+        <h2 style="margin: 0;">
+          房間玩家
+        </h2>
+
+        <span
+          id="playerCount"
+          class="player-count"
+        >
+          0 / 4
+        </span>
+      </div>
+
+      <div
+        id="playerList"
+        class="player-list"
+      ></div>
+
+      <div
+        id="lobbyMessage"
+        class="waiting-box"
+      >
+        等待其他玩家加入……
+      </div>
+
+      <button
+        id="startGameButton"
+        class="button button-primary hidden"
+        type="button"
+        disabled
+      >
+        至少需要 2 位玩家
+      </button>
+
+      <button
+        id="leaveRoomButton"
+        class="button button-danger"
+        type="button"
+      >
+        離開房間
+      </button>
+
+      <div
+        id="lobbyStatus"
+        class="status"
+      ></div>
+    </section>
+  </main>
+
+  <script type="module">
+    /*
+      Firebase 官方 CDN 模組
+    */
+    import {
+      initializeApp
+    } from
+      "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+
+    import {
+      getAuth,
+      signInAnonymously
+    } from
+      "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+    import {
+      getDatabase,
+      ref,
+      get,
+      remove,
+      onValue,
+      onDisconnect,
+      runTransaction
+    } from
+      "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
+    /*
+      你的 Firebase 設定
+    */
+    const firebaseConfig = {
+      apiKey:
+        "AIzaSyD0cfGcTfYxkvmNQT2gUdyL0eIaxJYth3o",
+
+      authDomain:
+        "undercover-room.firebaseapp.com",
+
+      databaseURL:
+        "https://undercover-room-default-rtdb.firebaseio.com",
+
+      projectId:
+        "undercover-room",
+
+      storageBucket:
+        "undercover-room.firebasestorage.app",
+
+      messagingSenderId:
+        "989946004591",
+
+      appId:
+        "1:989946004591:web:a0b214d0514433fb6df99a"
+    };
+
+    const app =
+      initializeApp(firebaseConfig);
+
+    const auth =
+      getAuth(app);
+
+    const database =
+      getDatabase(app);
+
+    let currentUser = null;
+    let currentRoomCode = null;
+    let currentRoomRef = null;
+    let roomUnsubscribe = null;
+    let disconnectOperation = null;
+
+    const homePage =
+      document.getElementById("homePage");
+
+    const lobbyPage =
+      document.getElementById("lobbyPage");
+
+    const playerNameInput =
+      document.getElementById("playerName");
+
+    const roomCodeInput =
+      document.getElementById("roomCodeInput");
+
+    const createRoomButton =
+      document.getElementById("createRoomButton");
+
+    const joinRoomButton =
+      document.getElementById("joinRoomButton");
+
+    const homeStatus =
+      document.getElementById("homeStatus");
+
+    const roomCodeDisplay =
+      document.getElementById("roomCodeDisplay");
+
+    const playerList =
+      document.getElementById("playerList");
+
+    const playerCount =
+      document.getElementById("playerCount");
+
+    const lobbyMessage =
+      document.getElementById("lobbyMessage");
+
+    const startGameButton =
+      document.getElementById("startGameButton");
+
+    const leaveRoomButton =
+      document.getElementById("leaveRoomButton");
+
+    const copyRoomButton =
+      document.getElementById("copyRoomButton");
+
+    const lobbyStatus =
+      document.getElementById("lobbyStatus");
+
+    function setStatus(
+      element,
+      message,
+      type = ""
+    ) {
+      element.textContent = message;
+      element.className =
+        `status ${type}`.trim();
+    }
+
+    function getPlayerName() {
+      return playerNameInput.value.trim();
+    }
+
+    function validatePlayerName() {
+      const playerName = getPlayerName();
+
+      if (!playerName) {
+        setStatus(
+          homeStatus,
+          "請先輸入你的暱稱。",
+          "error"
+        );
+
+        playerNameInput.focus();
+        return null;
+      }
+
+      if (playerName.length > 12) {
+        setStatus(
+          homeStatus,
+          "暱稱最多 12 個字。",
+          "error"
+        );
+
+        return null;
+      }
+
+      return playerName;
+    }
+
+    function generateRoomCode() {
+      return String(
+        Math.floor(
+          100000 + Math.random() * 900000
+        )
+      );
+    }
+
+    function setHomeButtonsDisabled(disabled) {
+      createRoomButton.disabled = disabled;
+      joinRoomButton.disabled = disabled;
+    }
+
+    async function initializeAuthentication() {
+      try {
+        const userCredential =
+          await signInAnonymously(auth);
+
+        currentUser =
+          userCredential.user;
+
+        setStatus(
+          homeStatus,
+          "連線成功，可以建立或加入房間。",
+          "success"
+        );
+
+        setHomeButtonsDisabled(false);
+      } catch (error) {
+        console.error(
+          "匿名登入失敗：",
+          error
+        );
+
+        setStatus(
+          homeStatus,
+          `連線失敗：${error.message}`,
+          "error"
+        );
+      }
+    }
+
+    async function createRoom() {
+      const playerName =
+        validatePlayerName();
+
+      if (!playerName || !currentUser) {
+        return;
+      }
+
+      setHomeButtonsDisabled(true);
+
+      setStatus(
+        homeStatus,
+        "正在建立房間……"
+      );
+
+      try {
+        let roomCreated = false;
+
+        for (
+          let attempt = 0;
+          attempt < 10;
+          attempt++
+        ) {
+          const roomCode =
+            generateRoomCode();
+
+          const roomRef =
+            ref(
+              database,
+              `rooms/${roomCode}`
+            );
+
+          const transactionResult =
+            await runTransaction(
+              roomRef,
+              function(currentRoom) {
+                /*
+                  房號已存在，放棄這次交易，
+                  再產生另一個房號。
+                */
+                if (currentRoom !== null) {
+                  return;
+                }
+
+                return {
+                  hostId:
+                    currentUser.uid,
+
+                  status:
+                    "waiting",
+
+                  maxPlayers:
+                    4,
+
+                  createdAt:
+                    Date.now(),
+
+                  players: {
+                    [currentUser.uid]: {
+                      name:
+                        playerName,
+
+                      joinedAt:
+                        Date.now()
+                    }
+                  }
+                };
+              },
+              {
+                applyLocally: false
+              }
+            );
+
+          if (transactionResult.committed) {
+            roomCreated = true;
+
+            await enterRoom(roomCode);
+            break;
+          }
+        }
+
+        if (!roomCreated) {
+          throw new Error(
+            "暫時無法產生房號，請再試一次。"
+          );
+        }
+      } catch (error) {
+        console.error(
+          "建立房間失敗：",
+          error
+        );
+
+        setStatus(
+          homeStatus,
+          `建立失敗：${error.message}`,
+          "error"
+        );
+
+        setHomeButtonsDisabled(false);
+      }
+    }
+
+    async function joinRoom() {
+      const playerName =
+        validatePlayerName();
+
+      if (!playerName || !currentUser) {
+        return;
+      }
+
+      const roomCode =
+        roomCodeInput.value
+          .replace(/\D/g, "")
+          .slice(0, 6);
+
+      roomCodeInput.value =
+        roomCode;
+
+      if (roomCode.length !== 6) {
+        setStatus(
+          homeStatus,
+          "請輸入完整的六位數房號。",
+          "error"
+        );
+
+        roomCodeInput.focus();
+        return;
+      }
+
+      setHomeButtonsDisabled(true);
+
+      setStatus(
+        homeStatus,
+        "正在加入房間……"
+      );
+
+      try {
+        const roomRef =
+          ref(
+            database,
+            `rooms/${roomCode}`
+          );
+
+        const existingSnapshot =
+          await get(roomRef);
+
+        if (!existingSnapshot.exists()) {
+          throw new Error(
+            "找不到這個房間，請確認房號。"
+          );
+        }
+
+        const existingRoom =
+          existingSnapshot.val();
+
+        if (
+          existingRoom.status !==
+          "waiting"
+        ) {
+          throw new Error(
+            "這個房間已經開始遊戲。"
+          );
+        }
+
+        const transactionResult =
+          await runTransaction(
+            roomRef,
+            function(room) {
+              if (room === null) {
+                return;
+              }
+
+              if (
+                room.status !==
+                "waiting"
+              ) {
+                return;
+              }
+
+              if (!room.players) {
+                room.players = {};
+              }
+
+              /*
+                同一個玩家重新進入時，
+                更新名稱但不增加人數。
+              */
+              if (
+                room.players[
+                  currentUser.uid
+                ]
+              ) {
+                room.players[
+                  currentUser.uid
+                ].name = playerName;
+
+                return room;
+              }
+
+              const currentPlayerCount =
+                Object.keys(
+                  room.players
+                ).length;
+
+              if (
+                currentPlayerCount >= 4
+              ) {
+                return;
+              }
+
+              room.players[
+                currentUser.uid
+              ] = {
+                name:
+                  playerName,
+
+                joinedAt:
+                  Date.now()
+              };
+
+              return room;
+            },
+            {
+              applyLocally: false
+            }
+          );
+
+        if (!transactionResult.committed) {
+          const latestSnapshot =
+            await get(roomRef);
+
+          if (!latestSnapshot.exists()) {
+            throw new Error(
+              "房間已不存在。"
+            );
+          }
+
+          const latestRoom =
+            latestSnapshot.val();
+
+          const latestPlayerCount =
+            Object.keys(
+              latestRoom.players || {}
+            ).length;
+
+          if (latestPlayerCount >= 4) {
+            throw new Error(
+              "房間已滿，最多四人。"
+            );
+          }
+
+          throw new Error(
+            "目前無法加入這個房間。"
+          );
+        }
+
+        await enterRoom(roomCode);
+      } catch (error) {
+        console.error(
+          "加入房間失敗：",
+          error
+        );
+
+        setStatus(
+          homeStatus,
+          `加入失敗：${error.message}`,
+          "error"
+        );
+
+        setHomeButtonsDisabled(false);
+      }
+    }
+
+    async function enterRoom(roomCode) {
+      currentRoomCode =
+        roomCode;
+
+      currentRoomRef =
+        ref(
+          database,
+          `rooms/${roomCode}`
+        );
+
+      roomCodeDisplay.textContent =
+        roomCode;
+
+      homePage.classList.add(
+        "hidden"
+      );
+
+      lobbyPage.classList.remove(
+        "hidden"
+      );
+
+      setStatus(
+        lobbyStatus,
+        ""
+      );
+
+      /*
+        關閉上一個房間的監聽，
+        避免重複執行。
+      */
+      if (roomUnsubscribe) {
+        roomUnsubscribe();
+      }
+
+      roomUnsubscribe =
+        onValue(
+          currentRoomRef,
+          function(snapshot) {
+            if (!snapshot.exists()) {
+              handleRoomRemoved();
+              return;
+            }
+
+            renderRoom(
+              snapshot.val()
+            );
+          },
+          function(error) {
+            console.error(
+              "讀取房間失敗：",
+              error
+            );
+
+            setStatus(
+              lobbyStatus,
+              `同步失敗：${error.message}`,
+              "error"
+            );
+          }
+        );
+
+      /*
+        關閉瀏覽器、斷線或離開網站時，
+        自動移除自己的玩家資料。
+      */
+      const playerRef =
+        ref(
+          database,
+          `rooms/${roomCode}/players/${currentUser.uid}`
+        );
+
+      disconnectOperation =
+        onDisconnect(playerRef);
+
+      await disconnectOperation.remove();
+    }
+
+    function renderRoom(room) {
+      const players =
+        room.players || {};
+
+      const playerEntries =
+        Object.entries(players)
+          .sort(function(a, b) {
+            return (
+              a[1].joinedAt -
+              b[1].joinedAt
+            );
+          });
+
+      playerCount.textContent =
+        `${playerEntries.length} / 4`;
+
+      playerList.innerHTML = "";
+
+      playerEntries.forEach(
+        function([playerId, player]) {
+          const playerElement =
+            document.createElement("div");
+
+          playerElement.className =
+            "player";
+
+          const isHost =
+            playerId === room.hostId;
+
+          const isCurrentPlayer =
+            playerId === currentUser.uid;
+
+          playerElement.innerHTML = `
+            <div class="player-main">
+              <div class="avatar">
+                ${isHost ? "👑" : "🙂"}
+              </div>
+
+              <div>
+                <span class="player-name"></span>
+
+                ${
+                  isCurrentPlayer
+                    ? `<span class="player-you">你</span>`
+                    : ""
+                }
+              </div>
+            </div>
+
+            ${
+              isHost
+                ? `<span class="host-badge">房主</span>`
+                : ""
+            }
+          `;
+
+          playerElement
+            .querySelector(".player-name")
+            .textContent =
+              player.name;
+
+          playerList.appendChild(
+            playerElement
+          );
+        }
+      );
+
+      const isHost =
+        room.hostId === currentUser.uid;
+
+      if (playerEntries.length < 2) {
+        lobbyMessage.textContent =
+          "等待至少一位朋友加入……";
+      } else if (playerEntries.length < 4) {
+        lobbyMessage.textContent =
+          "已可開始遊戲，也可以繼續等待其他朋友。";
+      } else {
+        lobbyMessage.textContent =
+          "房間已滿，四位玩家均已到齊。";
+      }
+
+      if (isHost) {
+        startGameButton.classList.remove(
+          "hidden"
+        );
+
+        if (playerEntries.length >= 2) {
+          startGameButton.disabled =
+            false;
+
+          startGameButton.textContent =
+            "開始遊戲";
+        } else {
+          startGameButton.disabled =
+            true;
+
+          startGameButton.textContent =
+            "至少需要 2 位玩家";
+        }
+      } else {
+        startGameButton.classList.add(
+          "hidden"
+        );
+      }
+    }
+
+    async function leaveRoom() {
+      if (
+        !currentRoomCode ||
+        !currentUser
+      ) {
+        return;
+      }
+
+      try {
+        if (disconnectOperation) {
+          await disconnectOperation.cancel();
+        }
+
+        const playerRef =
+          ref(
+            database,
+            `rooms/${currentRoomCode}/players/${currentUser.uid}`
+          );
+
+        await remove(playerRef);
+      } catch (error) {
+        console.error(
+          "離開房間失敗：",
+          error
+        );
+      } finally {
+        resetToHome();
+      }
+    }
+
+    function handleRoomRemoved() {
+      setStatus(
+        lobbyStatus,
+        "房間已關閉。",
+        "error"
+      );
+
+      setTimeout(
+        resetToHome,
+        1200
+      );
+    }
+
+    function resetToHome() {
+      if (roomUnsubscribe) {
+        roomUnsubscribe();
+        roomUnsubscribe = null;
+      }
+
+      currentRoomCode = null;
+      currentRoomRef = null;
+      disconnectOperation = null;
+
+      playerList.innerHTML = "";
+      roomCodeInput.value = "";
+
+      lobbyPage.classList.add(
+        "hidden"
+      );
+
+      homePage.classList.remove(
+        "hidden"
+      );
+
+      setHomeButtonsDisabled(false);
+
+      setStatus(
+        homeStatus,
+        "連線成功，可以建立或加入房間。",
+        "success"
+      );
+    }
+
+    async function copyRoomCode() {
+      if (!currentRoomCode) {
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(
+          currentRoomCode
+        );
+
+        copyRoomButton.textContent =
+          "已複製";
+
+        setTimeout(function() {
+          copyRoomButton.textContent =
+            "複製房號";
+        }, 1500);
+      } catch (error) {
+        setStatus(
+          lobbyStatus,
+          `房號：${currentRoomCode}`,
+          "success"
+        );
+      }
+    }
+
+    createRoomButton.addEventListener(
+      "click",
+      createRoom
+    );
+
+    joinRoomButton.addEventListener(
+      "click",
+      joinRoom
+    );
+
+    leaveRoomButton.addEventListener(
+      "click",
+      leaveRoom
+    );
+
+    copyRoomButton.addEventListener(
+      "click",
+      copyRoomCode
+    );
+
+    roomCodeInput.addEventListener(
+      "input",
+      function() {
+        roomCodeInput.value =
+          roomCodeInput.value
+            .replace(/\D/g, "")
+            .slice(0, 6);
+      }
+    );
+
+    startGameButton.addEventListener(
+      "click",
+      function() {
+        setStatus(
+          lobbyStatus,
+          "第一堂先完成房間系統，下一堂才會啟動身份抽籤。",
+          "success"
+        );
+      }
+    );
+
+    /*
+      一開始先鎖住按鈕，
+      等匿名登入成功才開放。
+    */
+    setHomeButtonsDisabled(true);
+
+    initializeAuthentication();
+  </script>
+</body>
+</html>
