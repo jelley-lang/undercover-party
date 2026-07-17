@@ -2,6 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -16,12 +17,13 @@
 
     :root {
       --background: #111322;
-      --card: rgba(31, 34, 58, 0.95);
+      --card: rgba(31, 34, 58, 0.96);
       --card-light: rgba(255, 255, 255, 0.07);
       --primary: #8d78ff;
       --primary-dark: #715be8;
       --secondary: #43d9b8;
       --danger: #ff758f;
+      --warning: #ffd76e;
       --text: #ffffff;
       --muted: #aaaec4;
       --border: rgba(255, 255, 255, 0.12);
@@ -76,6 +78,10 @@
       backdrop-filter: blur(18px);
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     .logo {
       width: 72px;
       height: 72px;
@@ -96,6 +102,7 @@
 
     h1,
     h2,
+    h3,
     p {
       margin-top: 0;
     }
@@ -243,10 +250,6 @@
       color: #63e4c6;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
     .room-code-box {
       padding: 20px;
       margin-bottom: 24px;
@@ -335,7 +338,7 @@
       padding: 5px 9px;
       border-radius: 999px;
       background: rgba(255, 207, 85, 0.16);
-      color: #ffd76e;
+      color: var(--warning);
       font-size: 12px;
       font-weight: 800;
     }
@@ -350,6 +353,128 @@
       line-height: 1.6;
     }
 
+    .game-header {
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    .round-label {
+      display: inline-block;
+      padding: 6px 12px;
+      margin-bottom: 12px;
+      border-radius: 999px;
+      color: #d9d3ff;
+      background: rgba(141, 120, 255, 0.17);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .secret-card {
+      min-height: 300px;
+      padding: 26px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid rgba(141, 120, 255, 0.35);
+      border-radius: 26px;
+      text-align: center;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(141, 120, 255, 0.2),
+          rgba(67, 217, 184, 0.08)
+        );
+      box-shadow:
+        inset 0 0 30px rgba(255, 255, 255, 0.03);
+      transition:
+        transform 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .secret-card.clickable {
+      cursor: pointer;
+    }
+
+    .secret-card.clickable:hover {
+      transform: translateY(-2px);
+      border-color: rgba(141, 120, 255, 0.7);
+    }
+
+    .secret-icon {
+      margin-bottom: 18px;
+      font-size: 55px;
+    }
+
+    .secret-title {
+      margin-bottom: 10px;
+      font-size: 23px;
+      font-weight: 900;
+    }
+
+    .secret-description {
+      max-width: 310px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .role-name {
+      margin-bottom: 9px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .role-name.civilian {
+      color: #63e4c6;
+    }
+
+    .role-name.undercover {
+      color: #ff9aae;
+    }
+
+    .word-label {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .secret-word {
+      margin-top: 5px;
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: 3px;
+    }
+
+    .game-notice {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 15px;
+      color: var(--muted);
+      text-align: center;
+      background: var(--card-light);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .game-player-list {
+      margin-top: 22px;
+    }
+
+    .small-player-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .small-player {
+      padding: 7px 11px;
+      border-radius: 999px;
+      color: #d7d9e7;
+      background: rgba(255, 255, 255, 0.07);
+      font-size: 13px;
+    }
+
     @media (max-width: 420px) {
       .card {
         padding: 27px 19px;
@@ -362,12 +487,18 @@
       .room-code {
         font-size: 30px;
       }
+
+      .secret-word {
+        font-size: 35px;
+      }
     }
   </style>
 </head>
 
 <body>
   <main class="app">
+
+    <!-- 首頁 -->
     <section
       id="homePage"
       class="card"
@@ -432,6 +563,7 @@
       </div>
     </section>
 
+    <!-- 等候房 -->
     <section
       id="lobbyPage"
       class="card hidden"
@@ -504,6 +636,106 @@
         class="status"
       ></div>
     </section>
+
+    <!-- 遊戲畫面 -->
+    <section
+      id="gamePage"
+      class="card hidden"
+    >
+      <div class="game-header">
+        <div
+          id="roundLabel"
+          class="round-label"
+        >
+          第 1 局
+        </div>
+
+        <h2 style="margin-bottom: 8px;">
+          查看你的秘密詞語
+        </h2>
+
+        <p style="color: var(--muted); margin-bottom: 0;">
+          注意旁邊的人類，他們極可能沒有禮貌。
+        </p>
+      </div>
+
+      <div
+        id="secretCard"
+        class="secret-card clickable"
+      >
+        <div
+          id="secretIcon"
+          class="secret-icon"
+        >
+          🔒
+        </div>
+
+        <div
+          id="secretTitle"
+          class="secret-title"
+        >
+          點一下查看身份
+        </div>
+
+        <div
+          id="secretDescription"
+          class="secret-description"
+        >
+          查看時請遮住螢幕，不要讓其他玩家看到你的詞語。
+        </div>
+
+        <div
+          id="secretResult"
+          class="hidden"
+        >
+          <div
+            id="roleName"
+            class="role-name"
+          ></div>
+
+          <div class="word-label">
+            你的詞語
+          </div>
+
+          <div
+            id="secretWord"
+            class="secret-word"
+          ></div>
+        </div>
+      </div>
+
+      <button
+        id="hideSecretButton"
+        class="button button-secondary hidden"
+        type="button"
+      >
+        隱藏身份與詞語
+      </button>
+
+      <div class="game-notice">
+        所有人看完詞語後，請依序描述自己的詞，不能直接說出答案。
+      </div>
+
+      <div class="game-player-list">
+        <div
+          id="gamePlayerList"
+          class="small-player-list"
+        ></div>
+      </div>
+
+      <button
+        id="gameLeaveButton"
+        class="button button-danger"
+        type="button"
+      >
+        離開房間
+      </button>
+
+      <div
+        id="gameStatus"
+        class="status"
+      ></div>
+    </section>
   </main>
 
   <script type="module">
@@ -554,6 +786,105 @@
         "1:989946004591:web:a0b214d0514433fb6df99a"
     };
 
+    const wordPairs = [
+      {
+        civilian: "咖啡",
+        undercover: "奶茶"
+      },
+      {
+        civilian: "漢堡",
+        undercover: "三明治"
+      },
+      {
+        civilian: "珍珠奶茶",
+        undercover: "仙草奶凍"
+      },
+      {
+        civilian: "火鍋",
+        undercover: "麻辣燙"
+      },
+      {
+        civilian: "冰淇淋",
+        undercover: "霜淇淋"
+      },
+      {
+        civilian: "貓咪",
+        undercover: "兔子"
+      },
+      {
+        civilian: "獅子",
+        undercover: "老虎"
+      },
+      {
+        civilian: "企鵝",
+        undercover: "北極熊"
+      },
+      {
+        civilian: "醫師",
+        undercover: "護理師"
+      },
+      {
+        civilian: "老師",
+        undercover: "教授"
+      },
+      {
+        civilian: "秘書",
+        undercover: "助理"
+      },
+      {
+        civilian: "捷運",
+        undercover: "火車"
+      },
+      {
+        civilian: "計程車",
+        undercover: "Uber"
+      },
+      {
+        civilian: "手機",
+        undercover: "平板"
+      },
+      {
+        civilian: "電腦",
+        undercover: "筆電"
+      },
+      {
+        civilian: "電影",
+        undercover: "電視劇"
+      },
+      {
+        civilian: "漫畫",
+        undercover: "小說"
+      },
+      {
+        civilian: "遊樂園",
+        undercover: "動物園"
+      },
+      {
+        civilian: "海邊",
+        undercover: "游泳池"
+      },
+      {
+        civilian: "口紅",
+        undercover: "唇釉"
+      },
+      {
+        civilian: "粉底液",
+        undercover: "氣墊粉餅"
+      },
+      {
+        civilian: "香水",
+        undercover: "擴香"
+      },
+      {
+        civilian: "鬼屋",
+        undercover: "密室逃脫"
+      },
+      {
+        civilian: "婚禮",
+        undercover: "生日派對"
+      }
+    ];
+
     const app =
       initializeApp(firebaseConfig);
 
@@ -565,14 +896,19 @@
 
     let currentUser = null;
     let currentRoomCode = null;
+    let currentRoomData = null;
     let roomUnsubscribe = null;
     let disconnectOperation = null;
+    let secretVisible = false;
 
     const homePage =
       document.getElementById("homePage");
 
     const lobbyPage =
       document.getElementById("lobbyPage");
+
+    const gamePage =
+      document.getElementById("gamePage");
 
     const playerNameInput =
       document.getElementById("playerName");
@@ -613,6 +949,42 @@
     const lobbyStatus =
       document.getElementById("lobbyStatus");
 
+    const roundLabel =
+      document.getElementById("roundLabel");
+
+    const secretCard =
+      document.getElementById("secretCard");
+
+    const secretIcon =
+      document.getElementById("secretIcon");
+
+    const secretTitle =
+      document.getElementById("secretTitle");
+
+    const secretDescription =
+      document.getElementById("secretDescription");
+
+    const secretResult =
+      document.getElementById("secretResult");
+
+    const roleName =
+      document.getElementById("roleName");
+
+    const secretWord =
+      document.getElementById("secretWord");
+
+    const hideSecretButton =
+      document.getElementById("hideSecretButton");
+
+    const gamePlayerList =
+      document.getElementById("gamePlayerList");
+
+    const gameLeaveButton =
+      document.getElementById("gameLeaveButton");
+
+    const gameStatus =
+      document.getElementById("gameStatus");
+
     function setStatus(
       element,
       message,
@@ -628,12 +1000,21 @@
       joinRoomButton.disabled = disabled;
     }
 
+    function showPage(page) {
+      homePage.classList.add("hidden");
+      lobbyPage.classList.add("hidden");
+      gamePage.classList.add("hidden");
+
+      page.classList.remove("hidden");
+    }
+
     function getPlayerName() {
       return playerNameInput.value.trim();
     }
 
     function validatePlayerName() {
-      const playerName = getPlayerName();
+      const playerName =
+        getPlayerName();
 
       if (!playerName) {
         setStatus(
@@ -665,6 +1046,14 @@
           100000 + Math.random() * 900000
         )
       );
+    }
+
+    function getRandomItem(array) {
+      return array[
+        Math.floor(
+          Math.random() * array.length
+        )
+      ];
     }
 
     async function initializeAuthentication() {
@@ -744,6 +1133,9 @@
 
               maxPlayers:
                 4,
+
+              round:
+                0,
 
               createdAt:
                 Date.now(),
@@ -905,31 +1297,6 @@
             );
           }
 
-          const latestRoomSnapshot =
-            await get(roomRef);
-
-          if (!latestRoomSnapshot.exists()) {
-            throw new Error(
-              "房間已被關閉。"
-            );
-          }
-
-          const latestRoom =
-            latestRoomSnapshot.val();
-
-          const latestPlayers =
-            latestRoom.players || {};
-
-          if (
-            Object.keys(
-              latestPlayers
-            ).length >= 4
-          ) {
-            throw new Error(
-              "房間已滿，最多四人。"
-            );
-          }
-
           throw new Error(
             "加入房間時發生同步衝突，請再按一次加入。"
           );
@@ -956,18 +1323,8 @@
       roomCodeDisplay.textContent =
         roomCode;
 
-      homePage.classList.add(
-        "hidden"
-      );
-
-      lobbyPage.classList.remove(
-        "hidden"
-      );
-
-      setStatus(
-        lobbyStatus,
-        ""
-      );
+      setStatus(lobbyStatus, "");
+      setStatus(gameStatus, "");
 
       if (roomUnsubscribe) {
         roomUnsubscribe();
@@ -988,8 +1345,11 @@
               return;
             }
 
+            currentRoomData =
+              snapshot.val();
+
             renderRoom(
-              snapshot.val()
+              currentRoomData
             );
           },
           function(error) {
@@ -1029,6 +1389,19 @@
               );
             }
           );
+
+      if (!players[currentUser.uid]) {
+        resetToHome();
+        return;
+      }
+
+      if (room.status === "playing") {
+        showPage(gamePage);
+        renderGame(room, playerEntries);
+        return;
+      }
+
+      showPage(lobbyPage);
 
       playerCount.textContent =
         `${playerEntries.length} / 4`;
@@ -1121,6 +1494,252 @@
       }
     }
 
+    async function startGame() {
+      if (
+        !currentRoomCode ||
+        !currentUser ||
+        !currentRoomData
+      ) {
+        return;
+      }
+
+      if (
+        currentRoomData.hostId !==
+        currentUser.uid
+      ) {
+        setStatus(
+          lobbyStatus,
+          "只有房主可以開始遊戲。",
+          "error"
+        );
+
+        return;
+      }
+
+      const players =
+        currentRoomData.players || {};
+
+      const playerIds =
+        Object.keys(players);
+
+      if (playerIds.length < 2) {
+        setStatus(
+          lobbyStatus,
+          "至少需要兩位玩家。",
+          "error"
+        );
+
+        return;
+      }
+
+      startGameButton.disabled = true;
+      startGameButton.textContent =
+        "正在分配身份……";
+
+      try {
+        const selectedPair =
+          getRandomItem(wordPairs);
+
+        const undercoverId =
+          getRandomItem(playerIds);
+
+        const updates = {};
+
+        updates[
+          `rooms/${currentRoomCode}/status`
+        ] = "playing";
+
+        updates[
+          `rooms/${currentRoomCode}/round`
+        ] =
+          (currentRoomData.round || 0) + 1;
+
+        updates[
+          `rooms/${currentRoomCode}/gameStartedAt`
+        ] = Date.now();
+
+        updates[
+          `rooms/${currentRoomCode}/undercoverId`
+        ] = undercoverId;
+
+        playerIds.forEach(
+          function(playerId) {
+            const isUndercover =
+              playerId === undercoverId;
+
+            updates[
+              `rooms/${currentRoomCode}/players/${playerId}/role`
+            ] =
+              isUndercover
+                ? "undercover"
+                : "civilian";
+
+            updates[
+              `rooms/${currentRoomCode}/players/${playerId}/word`
+            ] =
+              isUndercover
+                ? selectedPair.undercover
+                : selectedPair.civilian;
+          }
+        );
+
+        await update(
+          ref(database),
+          updates
+        );
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          lobbyStatus,
+          `開始失敗：${error.message}`,
+          "error"
+        );
+
+        startGameButton.disabled = false;
+        startGameButton.textContent =
+          "開始遊戲";
+      }
+    }
+
+    function renderGame(
+      room,
+      playerEntries
+    ) {
+      const currentPlayer =
+        room.players[currentUser.uid];
+
+      roundLabel.textContent =
+        `第 ${room.round || 1} 局`;
+
+      gamePlayerList.innerHTML = "";
+
+      playerEntries.forEach(
+        function([playerId, player]) {
+          const item =
+            document.createElement("span");
+
+          item.className =
+            "small-player";
+
+          item.textContent =
+            playerId === currentUser.uid
+              ? `${player.name}（你）`
+              : player.name;
+
+          gamePlayerList.appendChild(item);
+        }
+      );
+
+      if (!secretVisible) {
+        showSecretCover();
+      } else {
+        showSecretResult(currentPlayer);
+      }
+    }
+
+    function showSecretCover() {
+      secretVisible = false;
+
+      secretCard.classList.add(
+        "clickable"
+      );
+
+      secretIcon.classList.remove(
+        "hidden"
+      );
+
+      secretTitle.classList.remove(
+        "hidden"
+      );
+
+      secretDescription.classList.remove(
+        "hidden"
+      );
+
+      secretResult.classList.add(
+        "hidden"
+      );
+
+      hideSecretButton.classList.add(
+        "hidden"
+      );
+
+      secretIcon.textContent =
+        "🔒";
+
+      secretTitle.textContent =
+        "點一下查看身份";
+
+      secretDescription.textContent =
+        "查看時請遮住螢幕，不要讓其他玩家看到你的詞語。";
+    }
+
+    function revealSecret() {
+      if (
+        !currentRoomData ||
+        !currentRoomData.players ||
+        !currentRoomData.players[
+          currentUser.uid
+        ]
+      ) {
+        return;
+      }
+
+      secretVisible = true;
+
+      const currentPlayer =
+        currentRoomData.players[
+          currentUser.uid
+        ];
+
+      showSecretResult(currentPlayer);
+    }
+
+    function showSecretResult(player) {
+      secretCard.classList.remove(
+        "clickable"
+      );
+
+      secretIcon.classList.add(
+        "hidden"
+      );
+
+      secretTitle.classList.add(
+        "hidden"
+      );
+
+      secretDescription.classList.add(
+        "hidden"
+      );
+
+      secretResult.classList.remove(
+        "hidden"
+      );
+
+      hideSecretButton.classList.remove(
+        "hidden"
+      );
+
+      const isUndercover =
+        player.role === "undercover";
+
+      roleName.textContent =
+        isUndercover
+          ? "你是臥底"
+          : "你是平民";
+
+      roleName.className =
+        `role-name ${
+          isUndercover
+            ? "undercover"
+            : "civilian"
+        }`;
+
+      secretWord.textContent =
+        player.word || "詞語載入中";
+    }
+
     async function leaveRoom() {
       if (
         !currentRoomCode ||
@@ -1155,11 +1774,16 @@
 
           await remove(playerRef);
 
-          if (room.hostId === currentUser.uid) {
+          if (
+            room.hostId ===
+            currentUser.uid
+          ) {
             const latestSnapshot =
               await get(roomRef);
 
-            if (latestSnapshot.exists()) {
+            if (
+              latestSnapshot.exists()
+            ) {
               const latestRoom =
                 latestSnapshot.val();
 
@@ -1175,7 +1799,9 @@
                   }
                 );
 
-              if (remainingPlayers.length === 0) {
+              if (
+                remainingPlayers.length === 0
+              ) {
                 await remove(roomRef);
               } else {
                 await update(
@@ -1203,6 +1829,12 @@
         "error"
       );
 
+      setStatus(
+        gameStatus,
+        "房間已關閉。",
+        "error"
+      );
+
       setTimeout(
         resetToHome,
         1200
@@ -1216,18 +1848,15 @@
       }
 
       currentRoomCode = null;
+      currentRoomData = null;
       disconnectOperation = null;
+      secretVisible = false;
 
       playerList.innerHTML = "";
+      gamePlayerList.innerHTML = "";
       roomCodeInput.value = "";
 
-      lobbyPage.classList.add(
-        "hidden"
-      );
-
-      homePage.classList.remove(
-        "hidden"
-      );
+      showPage(homePage);
 
       setHomeButtonsDisabled(false);
 
@@ -1287,7 +1916,17 @@
       joinRoom
     );
 
+    startGameButton.addEventListener(
+      "click",
+      startGame
+    );
+
     leaveRoomButton.addEventListener(
+      "click",
+      leaveRoom
+    );
+
+    gameLeaveButton.addEventListener(
       "click",
       leaveRoom
     );
@@ -1297,15 +1936,22 @@
       copyRoomCode
     );
 
-    startGameButton.addEventListener(
+    secretCard.addEventListener(
       "click",
       function() {
-        setStatus(
-          lobbyStatus,
-          "房間系統成功，下一步再加入身份與題目。",
-          "success"
-        );
+        if (
+          secretCard.classList.contains(
+            "clickable"
+          )
+        ) {
+          revealSecret();
+        }
       }
+    );
+
+    hideSecretButton.addEventListener(
+      "click",
+      showSecretCover
     );
 
     setHomeButtonsDisabled(true);
