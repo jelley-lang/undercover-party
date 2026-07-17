@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>誰是臥底 Online</title>
+  <title>誰是臥底 Online｜第五堂多輪版</title>
   <style>
     * { box-sizing: border-box; }
     :root {
@@ -232,6 +232,7 @@
           <div id="wordReveal" style="margin-top:7px"></div>
         </div>
       </div>
+      <button id="continueRoundButton" class="btn secondary hidden" type="button">繼續下一輪描述</button>
       <button id="playAgainButton" class="btn primary hidden" type="button">再來一局</button>
     </div>
 
@@ -474,8 +475,8 @@ async function startGame(){
     const updates={
       status:"playing",phase:"reveal",round:(currentRoomData.round||0)+1,
       undercoverId,civilianWord:pair.civilian,undercoverWord:pair.undercover,
-      pairData:pair,speakerOrder:order,speakerIndex:0,messages:null,
-      eligibleVoteIds:null,tieIds:null,result:null,voteFinalized:false
+      pairData:pair,descriptionRound:1,speakerOrder:order,speakerIndex:0,messages:null,
+      eligibleVoteIds:null,tieIds:null,result:null,lastVoteResult:null,voteFinalized:false
     };
     ids.forEach(id=>{
       const undercover=id===undercoverId;
@@ -483,7 +484,7 @@ async function startGame(){
       updates[`players/${id}/word`]=undercover?pair.undercover:pair.civilian;
       updates[`players/${id}/ready`]=Boolean(currentRoomData.players[id].isBot);
       updates[`players/${id}/vote`]=null;
-      updates[`players/${id}/described`]=false;
+      updates[`players/${id}/describedRound`]=0;
     });
     await update(roomRef(),updates);
   }catch(error){
@@ -545,8 +546,9 @@ async function markReady(){
 
 function renderDiscussion(room){
   showPhase($("discussionPhase"));
-  $("gameTitle").textContent="文字描述階段";
-  $("gameSubtitle").textContent="依順序輸入一句描述，不能直接說出詞語。";
+  const descriptionRound=room.descriptionRound||1;
+  $("gameTitle").textContent=`第 ${descriptionRound} 輪文字描述`;
+  $("gameSubtitle").textContent="如果這輪沒有抓到臥底，就保留所有玩家並繼續下一輪。";
   const order=room.speakerOrder||[];
   const index=room.speakerIndex||0;
   const speakerId=order[index];
@@ -555,8 +557,10 @@ function renderDiscussion(room){
   $("speakerPosition").textContent=`第 ${Math.min(index+1,order.length)} 位，共 ${order.length} 位`;
   $("speakerOrderList").innerHTML="";
   order.forEach((id,i)=>{
-    const el=document.createElement("span"); el.className=`order ${i===index?"active":""}`;
-    el.textContent=`${i+1}. ${playerName(room,id)}`; $("speakerOrderList").appendChild(el);
+    const el=document.createElement("span");
+    el.className=`order ${i===index?"active":""}`;
+    el.textContent=`${i+1}. ${playerName(room,id)}`;
+    $("speakerOrderList").appendChild(el);
   });
 
   renderMessages(room,speakerId);
@@ -566,20 +570,24 @@ function renderDiscussion(room){
   $("startVoteButton").classList.add("hidden");
 
   if(allDone){
-    $("speakerName").textContent="全部玩家已回答";
+    $("speakerName").textContent=`第 ${descriptionRound} 輪描述完成`;
     $("speakerPosition").textContent="";
-    $("discussionStatus").textContent="所有描述都已送出，房主可以開始投票。";
+    $("discussionStatus").textContent="所有玩家都已回答，房主可以開始投票。";
     if(isHost(room))$("startVoteButton").classList.remove("hidden");
     return;
   }
 
+  const alreadyDescribed=(speaker?.describedRound||0)>=descriptionRound;
+
   if(speaker?.isBot){
     $("discussionStatus").textContent="輪到機器人回答。";
     $("botThinking").classList.remove("hidden");
-    if(isHost(room)&&!speaker.described)scheduleBotDescription(room,speakerId);
+    if(isHost(room)&&!alreadyDescribed)scheduleBotDescription(room,speakerId);
   }else if(speakerId===currentUser.uid){
-    $("discussionStatus").textContent=speaker.described?"你的描述已送出，等待下一位。":"輪到你了，請輸入一句描述。";
-    if(!speaker.described){
+    $("discussionStatus").textContent=alreadyDescribed
+      ?"你的描述已送出，等待下一位。"
+      :"輪到你了，請輸入一句新的描述。";
+    if(!alreadyDescribed){
       $("descriptionInputArea").classList.remove("hidden");
       $("descriptionInput").focus();
     }
@@ -590,17 +598,30 @@ function renderDiscussion(room){
 
 function renderMessages(room,currentSpeakerId){
   $("chatList").innerHTML="";
-  const messages=room.messages||{};
-  const order=room.speakerOrder||[];
-  order.forEach(id=>{
-    if(!messages[id])return;
-    const item=document.createElement("div");
-    item.className=`chat-item ${id===currentSpeakerId?"chat-current":""}`;
-    item.innerHTML='<div class="chat-name"></div><div class="chat-text"></div>';
-    item.querySelector(".chat-name").textContent=`${playerName(room,id)}${room.players[id].isBot?" 🤖":""}`;
-    item.querySelector(".chat-text").textContent=messages[id].text;
-    $("chatList").appendChild(item);
-  });
+  const allMessages=room.messages||{};
+  const currentRound=room.descriptionRound||1;
+
+  for(let round=1;round<=currentRound;round++){
+    const roundMessages=allMessages[round]||{};
+    if(!Object.keys(roundMessages).length)continue;
+
+    const heading=document.createElement("div");
+    heading.className="info";
+    heading.style.marginTop="12px";
+    heading.textContent=`第 ${round} 輪描述`;
+    $("chatList").appendChild(heading);
+
+    const order=(round===currentRound ? room.speakerOrder : Object.keys(roundMessages));
+    order.forEach(id=>{
+      if(!roundMessages[id])return;
+      const item=document.createElement("div");
+      item.className=`chat-item ${round===currentRound&&id===currentSpeakerId?"chat-current":""}`;
+      item.innerHTML='<div class="chat-name"></div><div class="chat-text"></div>';
+      item.querySelector(".chat-name").textContent=`${playerName(room,id)}${room.players[id].isBot?" 🤖":""}`;
+      item.querySelector(".chat-text").textContent=roundMessages[id].text;
+      $("chatList").appendChild(item);
+    });
+  }
 }
 
 async function sendDescription(){
@@ -626,12 +647,13 @@ async function sendDescription(){
 }
 
 async function submitDescription(playerId,text,expectedIndex){
-  const lock=await runTransaction(roomRef(`messages/${playerId}`),value=>{
+  const round=currentRoomData?.descriptionRound||1;
+  const lock=await runTransaction(roomRef(`messages/${round}/${playerId}`),value=>{
     if(value)return;
     return {text,createdAt:Date.now()};
   });
   if(!lock.committed)return;
-  await update(roomRef(`players/${playerId}`),{described:true});
+  await update(roomRef(`players/${playerId}`),{describedRound:round});
   const snap=await get(roomRef());
   if(!snap.exists())return;
   const room=snap.val();
@@ -641,21 +663,39 @@ async function submitDescription(playerId,text,expectedIndex){
 
 function scheduleBotDescription(room,botId){
   const expectedIndex=room.speakerIndex||0;
+  const expectedRound=room.descriptionRound||1;
   actionTimer=setTimeout(async()=>{
     const snap=await get(roomRef());
     if(!snap.exists())return;
     const latest=snap.val();
-    if(latest.phase!=="discussion")return;
+    if(latest.phase!=="discussion"||(latest.descriptionRound||1)!==expectedRound)return;
     const order=latest.speakerOrder||[];
-    if(order[latest.speakerIndex||0]!==botId||latest.players?.[botId]?.described)return;
-    const role=latest.players[botId].role;
+    const bot=latest.players?.[botId];
+    if(order[latest.speakerIndex||0]!==botId||(bot?.describedRound||0)>=expectedRound)return;
+
+    const role=bot.role;
     const hints=role==="undercover"
       ? latest.pairData?.undercoverHints
       : latest.pairData?.civilianHints;
-    const fallback=["生活中很常見","有些人很喜歡","通常有不只一種形式"];
-    const used=new Set(Object.values(latest.messages||{}).map(m=>m.text));
-    const candidates=(hints||fallback).filter(h=>!used.has(h));
-    const text=randomItem(candidates.length?candidates:(hints||fallback));
+    const fallback=[
+      "生活中很常見",
+      "不同的人會有不同偏好",
+      "通常不只一種形式",
+      "有時候會和其他東西一起出現",
+      "在特定場合特別常見"
+    ];
+
+    const used=new Set();
+    Object.values(latest.messages||{}).forEach(roundMessages=>{
+      Object.values(roundMessages||{}).forEach(message=>used.add(message.text));
+    });
+
+    const pool=(hints||fallback);
+    const candidates=pool.filter(h=>!used.has(h));
+    const text=randomItem(candidates.length?candidates:fallback.filter(h=>!used.has(h)).length
+      ? fallback.filter(h=>!used.has(h))
+      : fallback);
+
     await submitDescription(botId,text,expectedIndex);
   },1800+Math.floor(Math.random()*1500));
 }
@@ -673,7 +713,6 @@ function renderVoting(room){
   $("gameSubtitle").textContent="選出你認為是臥底的人。機器人也會投票，因為顯然它也有意見。";
   const players=room.players||{};
   const ids=Object.keys(players);
-  const humans=humanEntries(room).map(([id])=>id);
   const bots=botEntries(room).map(([id])=>id);
   const me=players[currentUser.uid];
   let eligible=room.eligibleVoteIds ? Object.values(room.eligibleVoteIds) : ids;
@@ -715,7 +754,7 @@ function scheduleBotVote(room,botId,eligibleIds){
     const candidates=(latest.eligibleVoteIds?Object.values(latest.eligibleVoteIds):Object.keys(latest.players||{}))
       .filter(id=>id!==botId);
     if(!candidates.length)return;
-    const messages=latest.messages||{};
+    const messages=latest.messages?.[latest.descriptionRound||1]||{};
     const botWord=latest.players[botId].word;
     let scored=candidates.map(id=>{
       let score=Math.random();
@@ -734,24 +773,51 @@ async function finalizeVote(room){
   try{
     const lock=await runTransaction(roomRef("voteFinalized"),value=>value===true?undefined:true);
     if(!lock.committed)return;
+
     const counts={};
-    Object.values(room.players||{}).forEach(p=>{ if(p.vote)counts[p.vote]=(counts[p.vote]||0)+1; });
+    Object.values(room.players||{}).forEach(player=>{
+      if(player.vote)counts[player.vote]=(counts[player.vote]||0)+1;
+    });
     const values=Object.values(counts);
-    if(!values.length){ await update(roomRef(),{voteFinalized:false}); return; }
+    if(!values.length){
+      await update(roomRef(),{voteFinalized:false});
+      return;
+    }
+
     const max=Math.max(...values);
     const top=Object.keys(counts).filter(id=>counts[id]===max);
+
     if(top.length>1){
-      await update(roomRef(),{phase:"tie",tieIds:top,voteFinalized:false});
-    }else{
-      const eliminatedId=top[0];
       await update(roomRef(),{
-        phase:"result",voteFinalized:false,
-        result:{eliminatedId,winner:eliminatedId===room.undercoverId?"civilian":"undercover"}
+        phase:"tie",
+        tieIds:top,
+        voteFinalized:false
       });
+      return;
     }
+
+    const guessedId=top[0];
+    const caught=guessedId===room.undercoverId;
+
+    await update(roomRef(),{
+      phase:"result",
+      voteFinalized:false,
+      lastVoteResult:{
+        guessedId,
+        caught,
+        descriptionRound:room.descriptionRound||1,
+        voteCount:max
+      },
+      result:caught
+        ? {eliminatedId:guessedId,winner:"civilian"}
+        : null
+    });
   }catch(error){
-    console.error(error); await update(roomRef(),{voteFinalized:false});
-  }finally{ voteFinalizing=false; }
+    console.error(error);
+    await update(roomRef(),{voteFinalized:false});
+  }finally{
+    voteFinalizing=false;
+  }
 }
 
 function renderTie(room){
@@ -773,28 +839,67 @@ async function beginRevote(){
 
 function renderResult(room){
   showPhase($("resultPhase"));
-  $("gameTitle").textContent="本局結果";
-  $("gameSubtitle").textContent="真相出現了，友情是否仍存在由你們自行負責。";
-  const result=room.result||{};
-  const civilians=result.winner==="civilian";
-  $("resultIcon").textContent=civilians?"🎉":"🕵️";
-  $("resultTitle").textContent=civilians?"平民獲勝":"臥底獲勝";
-  const eliminated=playerName(room,result.eliminatedId);
-  $("resultSubtitle").textContent=civilians?`${eliminated} 被成功找出。`:`${eliminated} 被淘汰，但並不是臥底。`;
-  $("undercoverName").textContent=`${playerName(room,room.undercoverId)}${room.players?.[room.undercoverId]?.isBot?" 🤖":""}`;
-  $("wordReveal").textContent=`平民詞：${room.civilianWord}｜臥底詞：${room.undercoverWord}`;
-  $("playAgainButton").classList.toggle("hidden",!isHost(room));
+  const voteResult=room.lastVoteResult||{};
+  const caught=voteResult.caught===true;
+  const guessedName=playerName(room,voteResult.guessedId);
+
+  $("continueRoundButton").classList.add("hidden");
+  $("playAgainButton").classList.add("hidden");
+
+  if(caught){
+    $("gameTitle").textContent="抓到臥底了";
+    $("gameSubtitle").textContent=`經過 ${voteResult.descriptionRound||1} 輪描述，總算沒有讓臥底繼續混水摸魚。`;
+    $("resultIcon").textContent="🎉";
+    $("resultTitle").textContent="平民獲勝";
+    $("resultSubtitle").textContent=`${guessedName} 就是臥底。`;
+    $("undercoverName").textContent=`${playerName(room,room.undercoverId)}${room.players?.[room.undercoverId]?.isBot?" 🤖":""}`;
+    $("wordReveal").textContent=`平民詞：${room.civilianWord}｜臥底詞：${room.undercoverWord}`;
+    if(isHost(room))$("playAgainButton").classList.remove("hidden");
+  }else{
+    $("gameTitle").textContent=`第 ${voteResult.descriptionRound||1} 輪投票結果`;
+    $("gameSubtitle").textContent="沒有猜中。所有玩家保留，接著再描述一輪並重新投票。";
+    $("resultIcon").textContent="❌";
+    $("resultTitle").textContent="猜錯了";
+    $("resultSubtitle").textContent=`票數最高的是 ${guessedName}，但這位不是臥底。`;
+    $("undercoverName").textContent="身分繼續保密";
+    $("wordReveal").textContent="不公布答案，下一輪請提供新的描述。";
+    if(isHost(room))$("continueRoundButton").classList.remove("hidden");
+  }
+}
+
+async function continueNextRound(){
+  if(!currentRoomData||!isHost(currentRoomData))return;
+  const ids=Object.keys(currentRoomData.players||{});
+  const nextRound=(currentRoomData.descriptionRound||1)+1;
+  const updates={
+    phase:"discussion",
+    descriptionRound:nextRound,
+    speakerOrder:shuffled(ids),
+    speakerIndex:0,
+    eligibleVoteIds:null,
+    tieIds:null,
+    lastVoteResult:null,
+    result:null,
+    voteFinalized:false
+  };
+  ids.forEach(id=>{
+    updates[`players/${id}/vote`]=null;
+  });
+  await update(roomRef(),updates);
 }
 
 async function playAgain(){
   if(!currentRoomData||!isHost(currentRoomData))return;
   const updates={
     status:"waiting",phase:"waiting",undercoverId:null,civilianWord:null,undercoverWord:null,pairData:null,
-    speakerOrder:null,speakerIndex:null,messages:null,eligibleVoteIds:null,tieIds:null,result:null,voteFinalized:false
+    descriptionRound:null,speakerOrder:null,speakerIndex:null,messages:null,
+    eligibleVoteIds:null,tieIds:null,result:null,lastVoteResult:null,voteFinalized:false
   };
   Object.keys(currentRoomData.players||{}).forEach(id=>{
     updates[`players/${id}/role`]=null; updates[`players/${id}/word`]=null;
-    updates[`players/${id}/ready`]=null; updates[`players/${id}/vote`]=null; updates[`players/${id}/described`]=null;
+    updates[`players/${id}/ready`]=null;
+    updates[`players/${id}/vote`]=null;
+    updates[`players/${id}/describedRound`]=null;
   });
   secretVisible=false;
   await update(roomRef(),updates);
@@ -860,6 +965,7 @@ $("sendDescriptionButton").addEventListener("click",sendDescription);
 $("descriptionInput").addEventListener("keydown",event=>{ if(event.key==="Enter")sendDescription(); });
 $("startVoteButton").addEventListener("click",beginVoting);
 $("revoteButton").addEventListener("click",beginRevote);
+$("continueRoundButton").addEventListener("click",continueNextRound);
 $("playAgainButton").addEventListener("click",playAgain);
 
 setHomeDisabled(true);
