@@ -2,2899 +2,868 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>誰是臥底 Online</title>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     :root {
-      --background: #111322;
-      --card: rgba(31, 34, 58, 0.96);
-      --card-light: rgba(255, 255, 255, 0.07);
-      --primary: #8d78ff;
-      --primary-dark: #7059e8;
-      --secondary: #43d9b8;
-      --danger: #ff758f;
-      --warning: #ffd76e;
-      --text: #ffffff;
-      --muted: #aaaec4;
-      --border: rgba(255, 255, 255, 0.12);
+      --bg:#101222; --card:#20233c; --soft:rgba(255,255,255,.07);
+      --primary:#826cff; --primary2:#6f56e8; --green:#43d9b8;
+      --red:#ff758f; --yellow:#ffd76e; --text:#fff; --muted:#adb0c7;
+      --border:rgba(255,255,255,.12);
     }
-
     body {
-      margin: 0;
-      min-height: 100vh;
-      padding: 22px 16px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--text);
-      font-family:
-        "Microsoft JhengHei",
-        "PingFang TC",
-        Arial,
-        sans-serif;
+      margin:0; min-height:100vh; padding:20px 14px; display:flex;
+      justify-content:center; align-items:center; color:var(--text);
+      font-family:"Microsoft JhengHei","PingFang TC",Arial,sans-serif;
       background:
-        radial-gradient(
-          circle at top left,
-          rgba(130, 92, 255, 0.35),
-          transparent 36%
-        ),
-        radial-gradient(
-          circle at bottom right,
-          rgba(52, 212, 181, 0.22),
-          transparent 34%
-        ),
-        var(--background);
+        radial-gradient(circle at top left,rgba(130,108,255,.35),transparent 35%),
+        radial-gradient(circle at bottom right,rgba(67,217,184,.2),transparent 32%),
+        var(--bg);
     }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .app {
-      width: min(100%, 490px);
-    }
-
+    button,input { font:inherit; }
+    button { cursor:pointer; }
+    .app { width:min(100%,520px); }
     .card {
-      padding: 30px 24px;
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      background: var(--card);
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
-      backdrop-filter: blur(18px);
+      padding:28px 23px; border:1px solid var(--border); border-radius:27px;
+      background:rgba(32,35,60,.97); box-shadow:0 22px 65px rgba(0,0,0,.36);
     }
-
-    .hidden {
-      display: none !important;
-    }
-
+    .hidden { display:none!important; }
+    h1,h2,h3,p { margin-top:0; }
+    h1 { margin-bottom:8px; text-align:center; font-size:29px; }
+    h2 { margin-bottom:16px; }
     .logo {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto 16px;
-      display: grid;
-      place-items: center;
-      border-radius: 22px;
-      font-size: 37px;
-      background:
-        linear-gradient(
-          145deg,
-          var(--primary),
-          #c176f1
-        );
-      box-shadow:
-        0 14px 32px rgba(141, 120, 255, 0.32);
+      width:72px; height:72px; margin:0 auto 16px; display:grid; place-items:center;
+      border-radius:22px; font-size:37px;
+      background:linear-gradient(145deg,var(--primary),#c176f1);
     }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin-top: 0;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-      text-align: center;
-      font-size: 29px;
-    }
-
-    h2 {
-      margin-bottom: 18px;
-      font-size: 23px;
-    }
-
-    .subtitle {
-      margin-bottom: 28px;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.7;
-    }
-
-    .field-label {
-      display: block;
-      margin: 0 0 9px;
-      color: #d5d7e4;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
+    .subtitle { color:var(--muted); text-align:center; line-height:1.7; margin-bottom:25px; }
+    .label { display:block; margin:0 0 8px; color:#d8daea; font-size:14px; font-weight:800; }
     input {
-      width: 100%;
-      padding: 15px 16px;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      outline: none;
-      background: rgba(255, 255, 255, 0.07);
-      color: var(--text);
-      font-size: 16px;
-    }
-
-    input::placeholder {
-      color: #7f8298;
-    }
-
-    input:focus {
-      border-color: var(--primary);
-      box-shadow:
-        0 0 0 4px rgba(141, 120, 255, 0.14);
-    }
-
-    .button {
-      width: 100%;
-      margin-top: 13px;
-      padding: 15px 18px;
-      border: 0;
-      border-radius: 15px;
-      color: white;
-      font-weight: 800;
-      transition:
-        transform 0.15s ease,
-        opacity 0.15s ease;
-    }
-
-    .button:hover {
-      transform: translateY(-1px);
-    }
-
-    .button:active {
-      transform: scale(0.985);
-    }
-
-    .button:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-      transform: none;
-    }
-
-    .button-primary {
-      background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--primary-dark)
-        );
-    }
-
-    .button-secondary {
-      background:
-        linear-gradient(
-          135deg,
-          #2cb995,
-          var(--secondary)
-        );
-      color: #071b18;
-    }
-
-    .button-danger {
-      background: rgba(255, 117, 143, 0.14);
-      color: #ff9aae;
-      border: 1px solid rgba(255, 117, 143, 0.3);
-    }
-
-    .button-warning {
-      background:
-        linear-gradient(
-          135deg,
-          #f0b943,
-          #ffd76e
-        );
-      color: #332200;
-    }
-
-    .divider {
-      margin: 23px 0;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #7f8298;
-      font-size: 13px;
-    }
-
-    .divider::before,
-    .divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .join-row {
-      display: grid;
-      grid-template-columns: 1fr 120px;
-      gap: 10px;
-    }
-
-    .join-row .button {
-      margin-top: 0;
-    }
-
-    .status {
-      min-height: 22px;
-      margin-top: 18px;
-      color: var(--muted);
-      text-align: center;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .status.error {
-      color: #ff9aae;
-    }
-
-    .status.success {
-      color: #63e4c6;
-    }
-
-    .room-code-box {
-      padding: 20px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      text-align: center;
-      background: var(--card-light);
-    }
-
-    .room-code-label {
-      margin-bottom: 7px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .room-code {
-      letter-spacing: 7px;
-      font-size: 34px;
-      font-weight: 900;
-    }
-
-    .copy-button {
-      margin-top: 10px;
-      padding: 8px 14px;
-      border: 0;
-      border-radius: 999px;
-      color: #d9d3ff;
-      background: rgba(141, 120, 255, 0.16);
-    }
-
-    .section-header {
-      margin-bottom: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .player-count {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .player-list {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 22px;
-    }
-
-    .player {
-      padding: 14px 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      background: var(--card-light);
-    }
-
-    .player-main {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .avatar {
-      width: 39px;
-      height: 39px;
-      display: grid;
-      place-items: center;
-      border-radius: 13px;
-      background: rgba(141, 120, 255, 0.2);
-      font-size: 20px;
-    }
-
-    .player-name {
-      font-weight: 800;
-    }
-
-    .player-you {
-      margin-left: 5px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .host-badge,
-    .ready-badge,
-    .voted-badge {
-      padding: 5px 9px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .host-badge {
-      background: rgba(255, 207, 85, 0.16);
-      color: var(--warning);
-    }
-
-    .ready-badge {
-      background: rgba(67, 217, 184, 0.15);
-      color: #63e4c6;
-    }
-
-    .voted-badge {
-      background: rgba(141, 120, 255, 0.16);
-      color: #c9c0ff;
-    }
-
-    .info-box {
-      padding: 15px;
-      margin-bottom: 17px;
-      border-radius: 15px;
-      color: var(--muted);
-      text-align: center;
-      background: rgba(255, 255, 255, 0.05);
-      line-height: 1.7;
-    }
-
-    .round-label {
-      display: inline-block;
-      padding: 6px 12px;
-      margin-bottom: 12px;
-      border-radius: 999px;
-      color: #d9d3ff;
-      background: rgba(141, 120, 255, 0.17);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .game-header {
-      margin-bottom: 22px;
-      text-align: center;
-    }
-
-    .secret-card {
-      min-height: 290px;
-      padding: 26px 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      border: 1px solid rgba(141, 120, 255, 0.35);
-      border-radius: 26px;
-      text-align: center;
-      background:
-        linear-gradient(
-          145deg,
-          rgba(141, 120, 255, 0.2),
-          rgba(67, 217, 184, 0.08)
-        );
-    }
-
-    .secret-card.clickable {
-      cursor: pointer;
-    }
-
-    .secret-icon {
-      margin-bottom: 18px;
-      font-size: 55px;
-    }
-
-    .secret-title {
-      margin-bottom: 10px;
-      font-size: 23px;
-      font-weight: 900;
-    }
-
-    .secret-description {
-      max-width: 310px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .role-name {
-      margin-bottom: 9px;
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .role-name.civilian {
-      color: #63e4c6;
-    }
-
-    .role-name.undercover {
-      color: #ff9aae;
-    }
-
-    .word-label {
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .secret-word {
-      margin-top: 5px;
-      font-size: 42px;
-      font-weight: 900;
-      letter-spacing: 3px;
-    }
-
-    .phase-box {
-      padding: 24px 20px;
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      text-align: center;
-      background: var(--card-light);
-    }
-
-    .phase-icon {
-      margin-bottom: 12px;
-      font-size: 48px;
-    }
-
-    .phase-title {
-      margin-bottom: 8px;
-      font-size: 23px;
-      font-weight: 900;
-    }
-
-    .phase-description {
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .speaker-name {
-      margin: 17px 0 6px;
-      color: #ffffff;
-      font-size: 34px;
-      font-weight: 900;
-    }
-
-    .speaker-position {
-      color: #c9c0ff;
-      font-size: 14px;
-    }
-
-    .order-list {
-      margin-top: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .order-item {
-      padding: 8px 11px;
-      border-radius: 999px;
-      color: var(--muted);
-      background: rgba(255, 255, 255, 0.06);
-      font-size: 13px;
-    }
-
-    .order-item.active {
-      color: white;
-      background: rgba(141, 120, 255, 0.35);
-      font-weight: 800;
-    }
-
-    .vote-list {
-      display: grid;
-      gap: 11px;
-    }
-
-    .vote-button {
-      width: 100%;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      color: white;
-      background: var(--card-light);
-      text-align: left;
-    }
-
-    .vote-button:hover {
-      border-color: var(--primary);
-      background: rgba(141, 120, 255, 0.15);
-    }
-
-    .vote-button.selected {
-      border-color: var(--secondary);
-      background: rgba(67, 217, 184, 0.13);
-    }
-
-    .vote-button:disabled {
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    .result-card {
-      padding: 25px 20px;
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      text-align: center;
-      background: var(--card-light);
-    }
-
-    .result-icon {
-      margin-bottom: 12px;
-      font-size: 58px;
-    }
-
-    .result-title {
-      margin-bottom: 11px;
-      font-size: 27px;
-      font-weight: 900;
-    }
-
-    .result-subtitle {
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .reveal-box {
-      margin-top: 18px;
-      padding: 16px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .reveal-name {
-      color: #ff9aae;
-      font-size: 24px;
-      font-weight: 900;
-    }
-
-    .reveal-word {
-      margin-top: 7px;
-      color: #ffffff;
-      font-size: 17px;
-    }
-
-    @media (max-width: 420px) {
-      .card {
-        padding: 27px 19px;
-      }
-
-      .join-row {
-        grid-template-columns: 1fr;
-      }
-
-      .room-code {
-        font-size: 30px;
-      }
-
-      .secret-word {
-        font-size: 35px;
-      }
+      width:100%; padding:14px 15px; border:1px solid var(--border);
+      border-radius:14px; outline:none; background:var(--soft); color:#fff;
+    }
+    input:focus { border-color:var(--primary); box-shadow:0 0 0 4px rgba(130,108,255,.14); }
+    input::placeholder { color:#81859d; }
+    .btn {
+      width:100%; margin-top:12px; padding:14px 17px; border:0; border-radius:15px;
+      color:#fff; font-weight:900; transition:.15s;
+    }
+    .btn:hover { transform:translateY(-1px); }
+    .btn:active { transform:scale(.985); }
+    .btn:disabled { cursor:not-allowed; opacity:.48; transform:none; }
+    .primary { background:linear-gradient(135deg,var(--primary),var(--primary2)); }
+    .secondary { background:linear-gradient(135deg,#2cb995,var(--green)); color:#071b18; }
+    .danger { background:rgba(255,117,143,.13); color:#ff9aae; border:1px solid rgba(255,117,143,.3); }
+    .warning { background:linear-gradient(135deg,#efb943,var(--yellow)); color:#382600; }
+    .ghost { background:var(--soft); border:1px solid var(--border); color:#e2e3ee; }
+    .divider { margin:21px 0; display:flex; align-items:center; gap:10px; color:#80849c; font-size:13px; }
+    .divider::before,.divider::after { content:""; flex:1; height:1px; background:var(--border); }
+    .join-row { display:grid; grid-template-columns:1fr 115px; gap:10px; }
+    .join-row .btn { margin:0; }
+    .status { min-height:21px; margin-top:15px; text-align:center; color:var(--muted); font-size:14px; line-height:1.5; }
+    .status.error { color:#ff9aae; }
+    .status.success { color:#63e4c6; }
+    .room-code-box { padding:18px; margin-bottom:21px; border:1px solid var(--border); border-radius:19px; text-align:center; background:var(--soft); }
+    .room-code { font-size:34px; font-weight:900; letter-spacing:7px; }
+    .small { color:var(--muted); font-size:13px; }
+    .copy { margin-top:8px; padding:7px 13px; border:0; border-radius:999px; background:rgba(130,108,255,.16); color:#dcd7ff; }
+    .header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:13px; }
+    .player-list,.vote-list,.chat-list { display:grid; gap:10px; }
+    .player,.vote-btn,.chat-item {
+      padding:13px 14px; border:1px solid var(--border); border-radius:15px; background:var(--soft);
+    }
+    .player { display:flex; justify-content:space-between; align-items:center; }
+    .player-main { display:flex; align-items:center; gap:10px; min-width:0; }
+    .avatar { width:40px; height:40px; display:grid; place-items:center; border-radius:13px; background:rgba(130,108,255,.2); font-size:20px; flex:none; }
+    .player-name { font-weight:900; word-break:break-word; }
+    .you { margin-left:5px; color:var(--muted); font-size:12px; }
+    .badges { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+    .badge { padding:5px 8px; border-radius:999px; font-size:12px; font-weight:900; }
+    .host { color:var(--yellow); background:rgba(255,215,110,.15); }
+    .bot { color:#9ce8ff; background:rgba(74,190,255,.14); }
+    .ready { color:#63e4c6; background:rgba(67,217,184,.14); }
+    .info { padding:14px; margin-top:15px; border-radius:15px; background:var(--soft); color:var(--muted); text-align:center; line-height:1.65; }
+    .toolbar { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .toolbar .btn { margin-top:10px; }
+    .round { display:inline-block; padding:6px 11px; margin-bottom:11px; border-radius:999px; color:#dcd7ff; background:rgba(130,108,255,.17); font-size:13px; font-weight:900; }
+    .game-head { text-align:center; margin-bottom:20px; }
+    .secret-card,.phase-box,.result-card {
+      padding:23px 19px; border:1px solid var(--border); border-radius:22px; text-align:center; background:var(--soft);
+    }
+    .secret-card { min-height:260px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-color:rgba(130,108,255,.35); }
+    .secret-card.clickable { cursor:pointer; }
+    .big-icon { font-size:52px; margin-bottom:12px; }
+    .phase-title { font-size:23px; font-weight:900; margin-bottom:8px; }
+    .role { font-size:19px; font-weight:900; margin-bottom:9px; }
+    .role.civilian { color:#63e4c6; }
+    .role.undercover { color:#ff9aae; }
+    .secret-word { font-size:40px; font-weight:900; letter-spacing:3px; margin-top:5px; }
+    .speaker { font-size:32px; font-weight:900; margin:13px 0 4px; }
+    .order-list { display:flex; flex-wrap:wrap; justify-content:center; gap:7px; margin-top:15px; }
+    .order { padding:7px 10px; border-radius:999px; background:rgba(255,255,255,.06); color:var(--muted); font-size:13px; }
+    .order.active { color:#fff; background:rgba(130,108,255,.35); font-weight:900; }
+    .chat-list { margin-top:16px; }
+    .chat-item { text-align:left; }
+    .chat-name { font-size:13px; color:#c9c2ff; font-weight:900; margin-bottom:5px; }
+    .chat-text { line-height:1.6; word-break:break-word; }
+    .chat-current { border-color:rgba(130,108,255,.55); }
+    .input-row { display:grid; grid-template-columns:1fr 90px; gap:9px; margin-top:15px; }
+    .input-row .btn { margin:0; }
+    .vote-btn { width:100%; color:#fff; display:flex; justify-content:space-between; align-items:center; text-align:left; cursor:pointer; }
+    .vote-btn:hover { border-color:var(--primary); }
+    .vote-btn.selected { border-color:var(--green); background:rgba(67,217,184,.12); }
+    .vote-btn:disabled { cursor:not-allowed; opacity:.68; }
+    .result-title { font-size:27px; font-weight:900; margin-bottom:8px; }
+    .reveal-box { margin-top:16px; padding:15px; border-radius:15px; background:rgba(255,255,255,.06); }
+    .reveal-name { color:#ff9aae; font-size:23px; font-weight:900; }
+    @media(max-width:430px){
+      .card{padding:25px 18px}.join-row,.toolbar{grid-template-columns:1fr}.input-row{grid-template-columns:1fr}
+      .room-code{font-size:30px}.secret-word{font-size:34px}
     }
   </style>
 </head>
-
 <body>
-  <main class="app">
+<main class="app">
+  <section id="homePage" class="card">
+    <div class="logo">🕵️</div>
+    <h1>誰是臥底 Online</h1>
+    <p class="subtitle">建立房間、加入朋友與機器人，<br>遠端也能用文字互相懷疑。</p>
+    <label class="label" for="playerName">你的暱稱</label>
+    <input id="playerName" maxlength="12" autocomplete="nickname" placeholder="例如：Cathy">
+    <button id="createRoomButton" class="btn primary" type="button">建立房間</button>
+    <div class="divider">或加入朋友的房間</div>
+    <div class="join-row">
+      <input id="roomCodeInput" maxlength="6" inputmode="numeric" placeholder="輸入六位數房號">
+      <button id="joinRoomButton" class="btn secondary" type="button">加入</button>
+    </div>
+    <div id="homeStatus" class="status">正在連接遊戲伺服器……</div>
+  </section>
 
-    <!-- 首頁 -->
-    <section
-      id="homePage"
-      class="card"
-    >
-      <div class="logo">🕵️</div>
+  <section id="lobbyPage" class="card hidden">
+    <div class="room-code-box">
+      <div class="small">房間號碼</div>
+      <div id="roomCodeDisplay" class="room-code">000000</div>
+      <button id="copyRoomButton" class="copy" type="button">複製房號</button>
+    </div>
+    <div class="header-row">
+      <h2 style="margin:0">房間玩家</h2>
+      <span id="playerCount" class="small">0 / 4</span>
+    </div>
+    <div id="playerList" class="player-list"></div>
+    <div id="lobbyMessage" class="info">等待其他玩家加入……</div>
+    <div id="hostTools" class="toolbar hidden">
+      <button id="addBotButton" class="btn ghost" type="button">＋ 加入機器人</button>
+      <button id="removeBotButton" class="btn danger" type="button">移除機器人</button>
+    </div>
+    <button id="startGameButton" class="btn primary hidden" type="button" disabled>至少需要 3 位玩家</button>
+    <button id="leaveRoomButton" class="btn danger" type="button">離開房間</button>
+    <div id="lobbyStatus" class="status"></div>
+  </section>
 
-      <h1>誰是臥底 Online</h1>
+  <section id="gamePage" class="card hidden">
+    <div class="game-head">
+      <div id="roundLabel" class="round">第 1 局</div>
+      <h2 id="gameTitle" style="margin-bottom:7px">查看你的秘密詞語</h2>
+      <p id="gameSubtitle" class="small"></p>
+    </div>
 
-      <p class="subtitle">
-        建立房間，邀請朋友加入，<br>
-        看看誰能把謊話說得最像真的。
-      </p>
-
-      <label
-        class="field-label"
-        for="playerName"
-      >
-        你的暱稱
-      </label>
-
-      <input
-        id="playerName"
-        maxlength="12"
-        autocomplete="nickname"
-        placeholder="例如：Cathy"
-      >
-
-      <button
-        id="createRoomButton"
-        class="button button-primary"
-        type="button"
-      >
-        建立房間
-      </button>
-
-      <div class="divider">
-        或加入朋友的房間
-      </div>
-
-      <div class="join-row">
-        <input
-          id="roomCodeInput"
-          maxlength="6"
-          inputmode="numeric"
-          placeholder="輸入六位數房號"
-        >
-
-        <button
-          id="joinRoomButton"
-          class="button button-secondary"
-          type="button"
-        >
-          加入
-        </button>
-      </div>
-
-      <div
-        id="homeStatus"
-        class="status"
-      >
-        正在連接遊戲伺服器……
-      </div>
-    </section>
-
-    <!-- 等候房 -->
-    <section
-      id="lobbyPage"
-      class="card hidden"
-    >
-      <div class="room-code-box">
-        <div class="room-code-label">
-          房間號碼
+    <div id="revealPhase">
+      <div id="secretCard" class="secret-card clickable">
+        <div id="secretCover">
+          <div class="big-icon">🔒</div>
+          <div class="phase-title">點一下查看身份</div>
+          <div class="small">遮好螢幕。遠端朋友看不到，但你身後的人類未必有禮貌。</div>
         </div>
-
-        <div
-          id="roomCodeDisplay"
-          class="room-code"
-        >
-          000000
-        </div>
-
-        <button
-          id="copyRoomButton"
-          class="copy-button"
-          type="button"
-        >
-          複製房號
-        </button>
-      </div>
-
-      <div class="section-header">
-        <h2 style="margin: 0;">
-          房間玩家
-        </h2>
-
-        <span
-          id="playerCount"
-          class="player-count"
-        >
-          0 / 4
-        </span>
-      </div>
-
-      <div
-        id="playerList"
-        class="player-list"
-      ></div>
-
-      <div
-        id="lobbyMessage"
-        class="info-box"
-      >
-        等待其他玩家加入……
-      </div>
-
-      <button
-        id="startGameButton"
-        class="button button-primary hidden"
-        type="button"
-        disabled
-      >
-        至少需要 2 位玩家
-      </button>
-
-      <button
-        id="leaveRoomButton"
-        class="button button-danger"
-        type="button"
-      >
-        離開房間
-      </button>
-
-      <div
-        id="lobbyStatus"
-        class="status"
-      ></div>
-    </section>
-
-    <!-- 遊戲畫面 -->
-    <section
-      id="gamePage"
-      class="card hidden"
-    >
-      <div class="game-header">
-        <div
-          id="roundLabel"
-          class="round-label"
-        >
-          第 1 局
-        </div>
-
-        <h2
-          id="gameTitle"
-          style="margin-bottom: 8px;"
-        >
-          查看你的秘密詞語
-        </h2>
-
-        <p
-          id="gameSubtitle"
-          style="color: var(--muted); margin-bottom: 0;"
-        ></p>
-      </div>
-
-      <!-- 查看身份 -->
-      <div id="revealPhase">
-        <div
-          id="secretCard"
-          class="secret-card clickable"
-        >
-          <div
-            id="secretCover"
-          >
-            <div class="secret-icon">
-              🔒
-            </div>
-
-            <div class="secret-title">
-              點一下查看身份
-            </div>
-
-            <div class="secret-description">
-              請遮住螢幕，避免旁邊那些毫無界線感的人偷看。
-            </div>
-          </div>
-
-          <div
-            id="secretResult"
-            class="hidden"
-          >
-            <div
-              id="roleName"
-              class="role-name"
-            ></div>
-
-            <div class="word-label">
-              你的詞語
-            </div>
-
-            <div
-              id="secretWord"
-              class="secret-word"
-            ></div>
-          </div>
-        </div>
-
-        <button
-          id="hideSecretButton"
-          class="button button-secondary hidden"
-          type="button"
-        >
-          隱藏身份與詞語
-        </button>
-
-        <button
-          id="readyButton"
-          class="button button-primary"
-          type="button"
-        >
-          我已經看完了
-        </button>
-
-        <div
-          id="readyStatus"
-          class="info-box"
-          style="margin-top: 17px;"
-        ></div>
-      </div>
-
-      <!-- 描述階段 -->
-      <div
-        id="discussionPhase"
-        class="hidden"
-      >
-        <div class="phase-box">
-          <div class="phase-icon">
-            🎤
-          </div>
-
-          <div class="phase-title">
-            現在請這位玩家描述
-          </div>
-
-          <div
-            id="speakerName"
-            class="speaker-name"
-          ></div>
-
-          <div
-            id="speakerPosition"
-            class="speaker-position"
-          ></div>
-
-          <div
-            id="speakerOrderList"
-            class="order-list"
-          ></div>
-        </div>
-
-        <button
-          id="nextSpeakerButton"
-          class="button button-primary hidden"
-          type="button"
-        >
-          下一位玩家
-        </button>
-
-        <button
-          id="startVoteButton"
-          class="button button-warning hidden"
-          type="button"
-        >
-          開始投票
-        </button>
-
-        <div class="info-box">
-          描述時不能直接說出自己的詞，也不要演得像剛收到奧斯卡。
+        <div id="secretResult" class="hidden">
+          <div id="roleName" class="role"></div>
+          <div class="small">你的詞語</div>
+          <div id="secretWord" class="secret-word"></div>
         </div>
       </div>
+      <button id="hideSecretButton" class="btn secondary hidden" type="button">隱藏身份與詞語</button>
+      <button id="readyButton" class="btn primary" type="button">我已經看完了</button>
+      <div id="readyStatus" class="info"></div>
+    </div>
 
-      <!-- 投票階段 -->
-      <div
-        id="votingPhase"
-        class="hidden"
-      >
-        <div
-          id="voteInstruction"
-          class="info-box"
-        >
-          選出你認為是臥底的玩家。
-        </div>
-
-        <div
-          id="voteList"
-          class="vote-list"
-        ></div>
-
-        <div
-          id="voteStatus"
-          class="info-box"
-          style="margin-top: 17px;"
-        ></div>
+    <div id="discussionPhase" class="hidden">
+      <div class="phase-box">
+        <div class="big-icon">⌨️</div>
+        <div class="phase-title">文字描述階段</div>
+        <div class="small">現在輪到</div>
+        <div id="speakerName" class="speaker"></div>
+        <div id="speakerPosition" class="small"></div>
+        <div id="speakerOrderList" class="order-list"></div>
       </div>
 
-      <!-- 平票 -->
-      <div
-        id="tiePhase"
-        class="hidden"
-      >
-        <div class="phase-box">
-          <div class="phase-icon">
-            ⚖️
-          </div>
-
-          <div class="phase-title">
-            投票結果平手
-          </div>
-
-          <div
-            id="tieDescription"
-            class="phase-description"
-          ></div>
-        </div>
-
-        <button
-          id="revoteButton"
-          class="button button-warning hidden"
-          type="button"
-        >
-          進行重新投票
-        </button>
+      <div id="descriptionInputArea" class="input-row hidden">
+        <input id="descriptionInput" maxlength="60" placeholder="輸入一句模糊描述，不能直接說出答案">
+        <button id="sendDescriptionButton" class="btn secondary" type="button">送出</button>
       </div>
+      <div id="botThinking" class="info hidden">機器人正在思考一個不至於自爆的回答……</div>
+      <div id="chatList" class="chat-list"></div>
+      <div id="discussionStatus" class="info"></div>
+      <button id="startVoteButton" class="btn warning hidden" type="button">開始投票</button>
+    </div>
 
-      <!-- 結果 -->
-      <div
-        id="resultPhase"
-        class="hidden"
-      >
-        <div class="result-card">
-          <div
-            id="resultIcon"
-            class="result-icon"
-          ></div>
+    <div id="votingPhase" class="hidden">
+      <div id="voteInstruction" class="info" style="margin-top:0">選出你認為是臥底的玩家。</div>
+      <div id="voteList" class="vote-list" style="margin-top:15px"></div>
+      <div id="voteStatus" class="info"></div>
+    </div>
 
-          <div
-            id="resultTitle"
-            class="result-title"
-          ></div>
-
-          <div
-            id="resultSubtitle"
-            class="result-subtitle"
-          ></div>
-
-          <div class="reveal-box">
-            <div>
-              本局臥底是
-            </div>
-
-            <div
-              id="undercoverName"
-              class="reveal-name"
-            ></div>
-
-            <div
-              id="wordReveal"
-              class="reveal-word"
-            ></div>
-          </div>
-        </div>
-
-        <button
-          id="playAgainButton"
-          class="button button-primary hidden"
-          type="button"
-        >
-          再來一局
-        </button>
+    <div id="tiePhase" class="hidden">
+      <div class="phase-box">
+        <div class="big-icon">⚖️</div>
+        <div class="phase-title">投票平手</div>
+        <div id="tieDescription" class="small"></div>
       </div>
-
-      <button
-        id="gameLeaveButton"
-        class="button button-danger"
-        type="button"
-      >
-        離開房間
-      </button>
-
-      <div
-        id="gameStatus"
-        class="status"
-      ></div>
-    </section>
-  </main>
-
-  <script type="module">
-    import {
-      initializeApp
-    } from
-      "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-
-    import {
-      getAuth,
-      signInAnonymously
-    } from
-      "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-
-    import {
-      getDatabase,
-      ref,
-      get,
-      set,
-      update,
-      remove,
-      onValue,
-      onDisconnect,
-      runTransaction
-    } from
-      "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey:
-        "AIzaSyD0cfGcTfYxkvmNQT2gUdyL0eIaxJYth3o",
-
-      authDomain:
-        "undercover-room.firebaseapp.com",
-
-      databaseURL:
-        "https://undercover-room-default-rtdb.firebaseio.com",
-
-      projectId:
-        "undercover-room",
-
-      storageBucket:
-        "undercover-room.firebasestorage.app",
-
-      messagingSenderId:
-        "989946004591",
-
-      appId:
-        "1:989946004591:web:a0b214d0514433fb6df99a"
-    };
-
-    const wordPairs = [
-      ["咖啡", "奶茶"],
-      ["漢堡", "三明治"],
-      ["珍珠奶茶", "仙草奶凍"],
-      ["火鍋", "麻辣燙"],
-      ["冰淇淋", "霜淇淋"],
-      ["貓咪", "兔子"],
-      ["獅子", "老虎"],
-      ["企鵝", "北極熊"],
-      ["醫師", "護理師"],
-      ["老師", "教授"],
-      ["秘書", "助理"],
-      ["捷運", "火車"],
-      ["計程車", "Uber"],
-      ["手機", "平板"],
-      ["電腦", "筆電"],
-      ["電影", "電視劇"],
-      ["漫畫", "小說"],
-      ["遊樂園", "動物園"],
-      ["海邊", "游泳池"],
-      ["口紅", "唇釉"],
-      ["粉底液", "氣墊粉餅"],
-      ["香水", "擴香"],
-      ["鬼屋", "密室逃脫"],
-      ["婚禮", "生日派對"],
-      ["蛋餅", "蔥油餅"],
-      ["拉麵", "烏龍麵"],
-      ["可樂", "沙士"],
-      ["香蕉", "芒果"],
-      ["雨傘", "雨衣"],
-      ["拖鞋", "涼鞋"]
-    ];
-
-    const app =
-      initializeApp(firebaseConfig);
-
-    const auth =
-      getAuth(app);
-
-    const database =
-      getDatabase(app);
-
-    let currentUser = null;
-    let currentRoomCode = null;
-    let currentRoomData = null;
-    let roomUnsubscribe = null;
-    let disconnectOperation = null;
-    let secretVisible = false;
-    let voteFinalizing = false;
-
-    const homePage =
-      document.getElementById("homePage");
-
-    const lobbyPage =
-      document.getElementById("lobbyPage");
-
-    const gamePage =
-      document.getElementById("gamePage");
-
-    const playerNameInput =
-      document.getElementById("playerName");
-
-    const roomCodeInput =
-      document.getElementById("roomCodeInput");
-
-    const createRoomButton =
-      document.getElementById("createRoomButton");
-
-    const joinRoomButton =
-      document.getElementById("joinRoomButton");
-
-    const homeStatus =
-      document.getElementById("homeStatus");
-
-    const roomCodeDisplay =
-      document.getElementById("roomCodeDisplay");
-
-    const playerList =
-      document.getElementById("playerList");
-
-    const playerCount =
-      document.getElementById("playerCount");
-
-    const lobbyMessage =
-      document.getElementById("lobbyMessage");
-
-    const startGameButton =
-      document.getElementById("startGameButton");
-
-    const leaveRoomButton =
-      document.getElementById("leaveRoomButton");
-
-    const copyRoomButton =
-      document.getElementById("copyRoomButton");
-
-    const lobbyStatus =
-      document.getElementById("lobbyStatus");
-
-    const roundLabel =
-      document.getElementById("roundLabel");
-
-    const gameTitle =
-      document.getElementById("gameTitle");
-
-    const gameSubtitle =
-      document.getElementById("gameSubtitle");
-
-    const revealPhase =
-      document.getElementById("revealPhase");
-
-    const discussionPhase =
-      document.getElementById("discussionPhase");
-
-    const votingPhase =
-      document.getElementById("votingPhase");
-
-    const tiePhase =
-      document.getElementById("tiePhase");
-
-    const resultPhase =
-      document.getElementById("resultPhase");
-
-    const secretCard =
-      document.getElementById("secretCard");
-
-    const secretCover =
-      document.getElementById("secretCover");
-
-    const secretResult =
-      document.getElementById("secretResult");
-
-    const roleName =
-      document.getElementById("roleName");
-
-    const secretWord =
-      document.getElementById("secretWord");
-
-    const hideSecretButton =
-      document.getElementById("hideSecretButton");
-
-    const readyButton =
-      document.getElementById("readyButton");
-
-    const readyStatus =
-      document.getElementById("readyStatus");
-
-    const speakerName =
-      document.getElementById("speakerName");
-
-    const speakerPosition =
-      document.getElementById("speakerPosition");
-
-    const speakerOrderList =
-      document.getElementById("speakerOrderList");
-
-    const nextSpeakerButton =
-      document.getElementById("nextSpeakerButton");
-
-    const startVoteButton =
-      document.getElementById("startVoteButton");
-
-    const voteInstruction =
-      document.getElementById("voteInstruction");
-
-    const voteList =
-      document.getElementById("voteList");
-
-    const voteStatus =
-      document.getElementById("voteStatus");
-
-    const tieDescription =
-      document.getElementById("tieDescription");
-
-    const revoteButton =
-      document.getElementById("revoteButton");
-
-    const resultIcon =
-      document.getElementById("resultIcon");
-
-    const resultTitle =
-      document.getElementById("resultTitle");
-
-    const resultSubtitle =
-      document.getElementById("resultSubtitle");
-
-    const undercoverName =
-      document.getElementById("undercoverName");
-
-    const wordReveal =
-      document.getElementById("wordReveal");
-
-    const playAgainButton =
-      document.getElementById("playAgainButton");
-
-    const gameLeaveButton =
-      document.getElementById("gameLeaveButton");
-
-    const gameStatus =
-      document.getElementById("gameStatus");
-
-    function setStatus(
-      element,
-      message,
-      type = ""
-    ) {
-      element.textContent = message;
-      element.className =
-        `status ${type}`.trim();
-    }
-
-    function showPage(page) {
-      homePage.classList.add("hidden");
-      lobbyPage.classList.add("hidden");
-      gamePage.classList.add("hidden");
-
-      page.classList.remove("hidden");
-    }
-
-    function showGamePhase(phaseElement) {
-      revealPhase.classList.add("hidden");
-      discussionPhase.classList.add("hidden");
-      votingPhase.classList.add("hidden");
-      tiePhase.classList.add("hidden");
-      resultPhase.classList.add("hidden");
-
-      phaseElement.classList.remove("hidden");
-    }
-
-    function setHomeButtonsDisabled(disabled) {
-      createRoomButton.disabled = disabled;
-      joinRoomButton.disabled = disabled;
-    }
-
-    function getPlayerName() {
-      return playerNameInput.value.trim();
-    }
-
-    function validatePlayerName() {
-      const playerName =
-        getPlayerName();
-
-      if (!playerName) {
-        setStatus(
-          homeStatus,
-          "請先輸入你的暱稱。",
-          "error"
-        );
-
-        playerNameInput.focus();
-        return null;
-      }
-
-      return playerName;
-    }
-
-    function generateRoomCode() {
-      return String(
-        Math.floor(
-          100000 + Math.random() * 900000
-        )
-      );
-    }
-
-    function getRandomItem(array) {
-      return array[
-        Math.floor(
-          Math.random() * array.length
-        )
-      ];
-    }
-
-    function shuffleArray(array) {
-      const result = [...array];
-
-      for (
-        let index = result.length - 1;
-        index > 0;
-        index--
-      ) {
-        const randomIndex =
-          Math.floor(
-            Math.random() * (index + 1)
-          );
-
-        [
-          result[index],
-          result[randomIndex]
-        ] = [
-          result[randomIndex],
-          result[index]
-        ];
-      }
-
-      return result;
-    }
-
-    function getSortedPlayers(room) {
-      return Object.entries(
-        room.players || {}
-      ).sort(
-        function(a, b) {
-          return (
-            (a[1].joinedAt || 0) -
-            (b[1].joinedAt || 0)
-          );
-        }
-      );
-    }
-
-    function getPlayerDisplayName(
-      room,
-      playerId
-    ) {
-      return (
-        room.players?.[playerId]?.name ||
-        "未知玩家"
-      );
-    }
-
-    function isCurrentUserHost(room) {
-      return (
-        room.hostId === currentUser.uid
-      );
-    }
-
-    async function initializeAuthentication() {
-      try {
-        const result =
-          await signInAnonymously(auth);
-
-        currentUser =
-          result.user;
-
-        setStatus(
-          homeStatus,
-          "連線成功，可以建立或加入房間。",
-          "success"
-        );
-
-        setHomeButtonsDisabled(false);
-      } catch (error) {
-        console.error(error);
-
-        setStatus(
-          homeStatus,
-          `連線失敗：${error.message}`,
-          "error"
-        );
-      }
-    }
-
-    async function createRoom() {
-      const playerName =
-        validatePlayerName();
-
-      if (!playerName || !currentUser) {
-        return;
-      }
-
-      setHomeButtonsDisabled(true);
-
-      try {
-        let roomCode = "";
-        let created = false;
-
-        for (
-          let attempt = 0;
-          attempt < 10;
-          attempt++
-        ) {
-          roomCode =
-            generateRoomCode();
-
-          const roomRef =
-            ref(
-              database,
-              `rooms/${roomCode}`
-            );
-
-          const snapshot =
-            await get(roomRef);
-
-          if (snapshot.exists()) {
-            continue;
-          }
-
-          await set(
-            roomRef,
-            {
-              hostId:
-                currentUser.uid,
-
-              status:
-                "waiting",
-
-              phase:
-                "waiting",
-
-              round:
-                0,
-
-              maxPlayers:
-                4,
-
-              createdAt:
-                Date.now(),
-
-              players: {
-                [currentUser.uid]: {
-                  name:
-                    playerName,
-
-                  joinedAt:
-                    Date.now()
-                }
-              }
-            }
-          );
-
-          created = true;
-          break;
-        }
-
-        if (!created) {
-          throw new Error(
-            "無法產生房號，請再試一次。"
-          );
-        }
-
-        await enterRoom(roomCode);
-      } catch (error) {
-        console.error(error);
-
-        setStatus(
-          homeStatus,
-          `建立失敗：${error.message}`,
-          "error"
-        );
-
-        setHomeButtonsDisabled(false);
-      }
-    }
-
-    async function joinRoom() {
-      const playerName =
-        validatePlayerName();
-
-      if (!playerName || !currentUser) {
-        return;
-      }
-
-      const roomCode =
-        roomCodeInput.value
-          .replace(/\D/g, "")
-          .slice(0, 6);
-
-      roomCodeInput.value =
-        roomCode;
-
-      if (roomCode.length !== 6) {
-        setStatus(
-          homeStatus,
-          "請輸入完整的六位數房號。",
-          "error"
-        );
-
-        return;
-      }
-
-      setHomeButtonsDisabled(true);
-
-      try {
-        const roomRef =
-          ref(
-            database,
-            `rooms/${roomCode}`
-          );
-
-        const roomSnapshot =
-          await get(roomRef);
-
-        if (!roomSnapshot.exists()) {
-          throw new Error(
-            "找不到這個房間。"
-          );
-        }
-
-        const roomData =
-          roomSnapshot.val();
-
-        if (roomData.status !== "waiting") {
-          throw new Error(
-            "遊戲已經開始，不能中途加入。"
-          );
-        }
-
-        const playersRef =
-          ref(
-            database,
-            `rooms/${roomCode}/players`
-          );
-
-        let roomFull = false;
-
-        const result =
-          await runTransaction(
-            playersRef,
-            function(players) {
-              const currentPlayers =
-                players || {};
-
-              if (
-                currentPlayers[
-                  currentUser.uid
-                ]
-              ) {
-                currentPlayers[
-                  currentUser.uid
-                ].name =
-                  playerName;
-
-                return currentPlayers;
-              }
-
-              if (
-                Object.keys(
-                  currentPlayers
-                ).length >= 4
-              ) {
-                roomFull = true;
-                return;
-              }
-
-              currentPlayers[
-                currentUser.uid
-              ] = {
-                name:
-                  playerName,
-
-                joinedAt:
-                  Date.now()
-              };
-
-              return currentPlayers;
-            }
-          );
-
-        if (!result.committed) {
-          throw new Error(
-            roomFull
-              ? "房間已滿，最多四人。"
-              : "加入失敗，請再試一次。"
-          );
-        }
-
-        await enterRoom(roomCode);
-      } catch (error) {
-        console.error(error);
-
-        setStatus(
-          homeStatus,
-          `加入失敗：${error.message}`,
-          "error"
-        );
-
-        setHomeButtonsDisabled(false);
-      }
-    }
-
-    async function enterRoom(roomCode) {
-      currentRoomCode =
-        roomCode;
-
-      roomCodeDisplay.textContent =
-        roomCode;
-
-      if (roomUnsubscribe) {
-        roomUnsubscribe();
-      }
-
-      const roomRef =
-        ref(
-          database,
-          `rooms/${roomCode}`
-        );
-
-      roomUnsubscribe =
-        onValue(
-          roomRef,
-          function(snapshot) {
-            if (!snapshot.exists()) {
-              resetToHome();
-              return;
-            }
-
-            currentRoomData =
-              snapshot.val();
-
-            renderRoom(
-              currentRoomData
-            );
-          }
-        );
-
-      const playerRef =
-        ref(
-          database,
-          `rooms/${roomCode}/players/${currentUser.uid}`
-        );
-
-      disconnectOperation =
-        onDisconnect(playerRef);
-
-      await disconnectOperation.remove();
-    }
-
-    function renderRoom(room) {
-      if (
-        !room.players ||
-        !room.players[currentUser.uid]
-      ) {
-        resetToHome();
-        return;
-      }
-
-      if (room.status === "waiting") {
-        renderLobby(room);
-      } else {
-        renderGame(room);
-      }
-    }
-
-    function renderLobby(room) {
-      showPage(lobbyPage);
-
-      const players =
-        getSortedPlayers(room);
-
-      playerCount.textContent =
-        `${players.length} / 4`;
-
-      playerList.innerHTML = "";
-
-      players.forEach(
-        function([playerId, player]) {
-          const item =
-            document.createElement("div");
-
-          item.className =
-            "player";
-
-          item.innerHTML = `
-            <div class="player-main">
-              <div class="avatar">
-                ${
-                  playerId === room.hostId
-                    ? "👑"
-                    : "🙂"
-                }
-              </div>
-
-              <div>
-                <span class="player-name"></span>
-
-                ${
-                  playerId === currentUser.uid
-                    ? '<span class="player-you">你</span>'
-                    : ""
-                }
-              </div>
-            </div>
-
-            ${
-              playerId === room.hostId
-                ? '<span class="host-badge">房主</span>'
-                : ""
-            }
-          `;
-
-          item
-            .querySelector(".player-name")
-            .textContent =
-              player.name;
-
-          playerList.appendChild(item);
-        }
-      );
-
-      if (players.length < 2) {
-        lobbyMessage.textContent =
-          "等待至少一位朋友加入……";
-      } else {
-        lobbyMessage.textContent =
-          "已可開始遊戲，也可以繼續等待朋友。";
-      }
-
-      if (isCurrentUserHost(room)) {
-        startGameButton.classList.remove(
-          "hidden"
-        );
-
-        startGameButton.disabled =
-          players.length < 2;
-
-        startGameButton.textContent =
-          players.length < 2
-            ? "至少需要 2 位玩家"
-            : "開始遊戲";
-      } else {
-        startGameButton.classList.add(
-          "hidden"
-        );
-      }
-    }
-
-    async function startGame() {
-      if (
-        !currentRoomData ||
-        !isCurrentUserHost(currentRoomData)
-      ) {
-        return;
-      }
-
-      const playerIds =
-        Object.keys(
-          currentRoomData.players || {}
-        );
-
-      if (playerIds.length < 2) {
-        return;
-      }
-
-      startGameButton.disabled = true;
-
-      try {
-        const selectedPair =
-          getRandomItem(wordPairs);
-
-        const undercoverId =
-          getRandomItem(playerIds);
-
-        const speakerOrder =
-          shuffleArray(playerIds);
-
-        const updates = {};
-
-        updates[
-          `rooms/${currentRoomCode}/status`
-        ] = "playing";
-
-        updates[
-          `rooms/${currentRoomCode}/phase`
-        ] = "reveal";
-
-        updates[
-          `rooms/${currentRoomCode}/round`
-        ] =
-          (currentRoomData.round || 0) + 1;
-
-        updates[
-          `rooms/${currentRoomCode}/undercoverId`
-        ] = undercoverId;
-
-        updates[
-          `rooms/${currentRoomCode}/civilianWord`
-        ] = selectedPair[0];
-
-        updates[
-          `rooms/${currentRoomCode}/undercoverWord`
-        ] = selectedPair[1];
-
-        updates[
-          `rooms/${currentRoomCode}/speakerOrder`
-        ] = speakerOrder;
-
-        updates[
-          `rooms/${currentRoomCode}/speakerIndex`
-        ] = 0;
-
-        updates[
-          `rooms/${currentRoomCode}/eligibleVoteIds`
-        ] = null;
-
-        updates[
-          `rooms/${currentRoomCode}/result`
-        ] = null;
-
-        playerIds.forEach(
-          function(playerId) {
-            const isUndercover =
-              playerId === undercoverId;
-
-            updates[
-              `rooms/${currentRoomCode}/players/${playerId}/role`
-            ] =
-              isUndercover
-                ? "undercover"
-                : "civilian";
-
-            updates[
-              `rooms/${currentRoomCode}/players/${playerId}/word`
-            ] =
-              isUndercover
-                ? selectedPair[1]
-                : selectedPair[0];
-
-            updates[
-              `rooms/${currentRoomCode}/players/${playerId}/ready`
-            ] = false;
-
-            updates[
-              `rooms/${currentRoomCode}/players/${playerId}/vote`
-            ] = null;
-          }
-        );
-
-        await update(
-          ref(database),
-          updates
-        );
-      } catch (error) {
-        console.error(error);
-
-        setStatus(
-          lobbyStatus,
-          `開始失敗：${error.message}`,
-          "error"
-        );
-
-        startGameButton.disabled = false;
-      }
-    }
-
-    function renderGame(room) {
-      showPage(gamePage);
-
-      roundLabel.textContent =
-        `第 ${room.round || 1} 局`;
-
-      const phase =
-        room.phase || "reveal";
-
-      if (phase === "reveal") {
-        renderRevealPhase(room);
-      } else if (phase === "discussion") {
-        renderDiscussionPhase(room);
-      } else if (phase === "voting") {
-        renderVotingPhase(room);
-      } else if (phase === "tie") {
-        renderTiePhase(room);
-      } else if (phase === "result") {
-        renderResultPhase(room);
-      }
-    }
-
-function renderRevealPhase(room) {
-  showGamePhase(revealPhase);
-
-  gameTitle.textContent =
-    "查看你的秘密詞語";
-
-  gameSubtitle.textContent =
-    "請自己看，不要讓其他玩家看到你的內容。";
-
-  const players =
-    Object.values(room.players || {});
-
-  const currentPlayer =
-    room.players[currentUser.uid];
-
-  if (!currentPlayer) {
-    setStatus(
-      gameStatus,
-      "找不到你的玩家資料，請重新加入房間。",
-      "error"
-    );
-
-    return;
-  }
-
-  const readyCount =
-    players.filter(
-      function(player) {
-        return player.ready === true;
-      }
-    ).length;
-
-  readyStatus.textContent =
-    `${readyCount} / ${players.length} 位玩家已看完`;
-
-  /*
-    強制顯示按鈕。
-    房主和一般玩家都必須確認看完。
-  */
-  readyButton.classList.remove("hidden");
-
-  const hasReadied =
-    currentPlayer.ready === true;
-
-  readyButton.disabled =
-    hasReadied;
-
-  readyButton.textContent =
-    hasReadied
-      ? "已確認，等待其他玩家"
-      : "我已經看完了";
-
-  if (secretVisible) {
-    showSecretResult(currentPlayer);
-  } else {
-    showSecretCover();
-  }
-
-  /*
-    所有人都按下確認後，
-    才由房主切換到描述階段。
-  */
-  if (
-    readyCount === players.length &&
-    players.length >= 2 &&
-    isCurrentUserHost(room)
-  ) {
-    beginDiscussion();
+      <button id="revoteButton" class="btn warning hidden" type="button">重新投票</button>
+    </div>
+
+    <div id="resultPhase" class="hidden">
+      <div class="result-card">
+        <div id="resultIcon" class="big-icon"></div>
+        <div id="resultTitle" class="result-title"></div>
+        <div id="resultSubtitle" class="small"></div>
+        <div class="reveal-box">
+          <div class="small">本局臥底是</div>
+          <div id="undercoverName" class="reveal-name"></div>
+          <div id="wordReveal" style="margin-top:7px"></div>
+        </div>
+      </div>
+      <button id="playAgainButton" class="btn primary hidden" type="button">再來一局</button>
+    </div>
+
+    <button id="gameLeaveButton" class="btn danger" type="button">離開房間</button>
+    <div id="gameStatus" class="status"></div>
+  </section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import {
+  getDatabase, ref, get, set, update, remove, onValue, onDisconnect, runTransaction
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD0cfGcTfYxkvmNQT2gUdyL0eIaxJYth3o",
+  authDomain: "undercover-room.firebaseapp.com",
+  databaseURL: "https://undercover-room-default-rtdb.firebaseio.com",
+  projectId: "undercover-room",
+  storageBucket: "undercover-room.firebasestorage.app",
+  messagingSenderId: "989946004591",
+  appId: "1:989946004591:web:a0b214d0514433fb6df99a"
+};
+
+const wordPairs = [
+  { civilian:"咖啡", undercover:"奶茶", civilianHints:["上班時很多人需要它","有時候味道會偏苦","冷熱都很常見"], undercoverHints:["甜度通常可以調整","很多人會加配料","冷熱都有人喝"] },
+  { civilian:"漢堡", undercover:"三明治", civilianHints:["常用手拿著吃","裡面通常夾很多東西","速食店很常見"], undercoverHints:["通常由幾層組成","早餐店很常見","也可以切成三角形"] },
+  { civilian:"火鍋", undercover:"麻辣燙", civilianHints:["大家會圍在一起吃","食材會放進湯裡","冬天特別受歡迎"], undercoverHints:["通常是一人一份","可以自己挑食材","味道常常比較重"] },
+  { civilian:"冰淇淋", undercover:"霜淇淋", civilianHints:["天氣熱時很受歡迎","有很多種口味","融化後會很麻煩"], undercoverHints:["通常裝在甜筒或杯子裡","口感很柔軟","常從機器直接擠出來"] },
+  { civilian:"貓咪", undercover:"兔子", civilianHints:["很多人養在家裡","個性有時很難猜","很會自己整理毛"], undercoverHints:["耳朵特徵很明顯","看起來通常很安靜","喜歡啃食物"] },
+  { civilian:"獅子", undercover:"老虎", civilianHints:["常被稱為森林之王","群體生活比較常見","雄性外觀差異明顯"], undercoverHints:["身上有很明顯的花紋","通常單獨行動","也是大型貓科動物"] },
+  { civilian:"醫師", undercover:"護理師", civilianHints:["需要做判斷與治療","工作環境常在醫院","值班很辛苦"], undercoverHints:["照護病人的時間很多","工作環境常在醫院","需要處理很多臨床細節"] },
+  { civilian:"老師", undercover:"教授", civilianHints:["需要準備教材","每天會面對學生","常常要改作業"], undercoverHints:["通常在大學出現","除了教學也會研究","可能會帶研究生"] },
+  { civilian:"秘書", undercover:"助理", civilianHints:["很常處理聯絡與排程","需要同時記很多事情","別人常覺得什麼都能問"], undercoverHints:["協助完成各種工作","事情常常很零碎","可能跟著主管或團隊"] },
+  { civilian:"捷運", undercover:"火車", civilianHints:["城市通勤很常用","站與站距離通常較短","尖峰時間很擠"], undercoverHints:["可以跨越比較遠的地區","通常會有不同車種","可能需要先買指定班次"] },
+  { civilian:"手機", undercover:"平板", civilianHints:["幾乎每天都帶著","可以打電話","尺寸通常比較方便單手拿"], undercoverHints:["螢幕比較大","常用來看影片或閱讀","不一定會拿來打電話"] },
+  { civilian:"電影", undercover:"電視劇", civilianHints:["通常一次看完一個故事","會在戲院上映","長度大約幾個小時"], undercoverHints:["通常分成很多集","故事發展時間比較長","可能每週更新"] },
+  { civilian:"口紅", undercover:"唇釉", civilianHints:["通常是固體膏狀","可以直接旋轉出來","補妝很方便"], undercoverHints:["通常用刷頭上色","質地可能比較水潤","瓶身通常像液體彩妝"] },
+  { civilian:"鬼屋", undercover:"密室逃脫", civilianHints:["主要目的是嚇人","走到一半常會後悔","裡面可能有人突然出現"], undercoverHints:["需要解很多謎題","通常有時間限制","團隊合作很重要"] },
+  { civilian:"蛋餅", undercover:"蔥油餅", civilianHints:["早餐店非常常見","通常會加蛋","可以包不同配料"], undercoverHints:["外層煎得酥脆","蔥味通常很明顯","也常在小吃攤看到"] },
+  { civilian:"可樂", undercover:"沙士", civilianHints:["黑色的氣泡飲料","速食店很常見","喝起來有甜味"], undercoverHints:["也是深色氣泡飲料","味道辨識度很高","有些人很喜歡有些人不行"] },
+  { civilian:"雨傘", undercover:"雨衣", civilianHints:["下雨時拿在手上","收起來後還是可能滴水","風太大時很脆弱"], undercoverHints:["下雨時穿在身上","騎車時很常使用","收納後可能悶濕"] },
+  { civilian:"海邊", undercover:"游泳池", civilianHints:["有沙子和浪","範圍通常很大","天氣會影響體驗"], undercoverHints:["水質通常有人管理","有固定邊界","常有不同深度"] }
+];
+
+const BOT_NAMES = ["小臥","阿疑","謎仔","偵探零號"];
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
+
+let currentUser = null;
+let currentRoomCode = null;
+let currentRoomData = null;
+let roomUnsubscribe = null;
+let disconnectOperation = null;
+let secretVisible = false;
+let actionTimer = null;
+let voteFinalizing = false;
+
+const $ = id => document.getElementById(id);
+const pages = [$("homePage"),$("lobbyPage"),$("gamePage")];
+const phases = [$("revealPhase"),$("discussionPhase"),$("votingPhase"),$("tiePhase"),$("resultPhase")];
+
+function setStatus(el,message,type=""){ el.textContent=message; el.className=`status ${type}`.trim(); }
+function showPage(page){ pages.forEach(p=>p.classList.add("hidden")); page.classList.remove("hidden"); }
+function showPhase(phase){ phases.forEach(p=>p.classList.add("hidden")); phase.classList.remove("hidden"); }
+function setHomeDisabled(value){ $("createRoomButton").disabled=value; $("joinRoomButton").disabled=value; }
+function cleanName(){ return $("playerName").value.trim(); }
+function validateName(){
+  const name=cleanName();
+  if(!name){ setStatus($("homeStatus"),"請先輸入暱稱。","error"); $("playerName").focus(); return null; }
+  return name;
+}
+function roomRef(path=""){ return ref(database,`rooms/${currentRoomCode}${path ? `/${path}` : ""}`); }
+function randomItem(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function shuffled(arr){
+  const copy=[...arr];
+  for(let i=copy.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [copy[i],copy[j]]=[copy[j],copy[i]]; }
+  return copy;
+}
+function sortedPlayers(room){
+  return Object.entries(room.players||{}).sort((a,b)=>(a[1].joinedAt||0)-(b[1].joinedAt||0));
+}
+function humanEntries(room){ return sortedPlayers(room).filter(([,p])=>!p.isBot); }
+function botEntries(room){ return sortedPlayers(room).filter(([,p])=>p.isBot); }
+function isHost(room){ return room.hostId===currentUser.uid; }
+function playerName(room,id){ return room.players?.[id]?.name||"未知玩家"; }
+function clearActionTimer(){ if(actionTimer){ clearTimeout(actionTimer); actionTimer=null; } }
+
+async function initAuth(){
+  try{
+    const result=await signInAnonymously(auth);
+    currentUser=result.user;
+    setStatus($("homeStatus"),"連線成功，可以建立或加入房間。","success");
+    setHomeDisabled(false);
+  }catch(error){
+    console.error(error);
+    setStatus($("homeStatus"),`連線失敗：${error.message}`,"error");
   }
 }
 
-    function showSecretCover() {
-      secretVisible = false;
-
-      secretCard.classList.add(
-        "clickable"
-      );
-
-      secretCover.classList.remove(
-        "hidden"
-      );
-
-      secretResult.classList.add(
-        "hidden"
-      );
-
-      hideSecretButton.classList.add(
-        "hidden"
-      );
+async function createRoom(){
+  const name=validateName();
+  if(!name||!currentUser)return;
+  setHomeDisabled(true);
+  setStatus($("homeStatus"),"正在建立房間……");
+  try{
+    let code="",created=false;
+    for(let i=0;i<10;i++){
+      code=String(Math.floor(100000+Math.random()*900000));
+      const target=ref(database,`rooms/${code}`);
+      if((await get(target)).exists())continue;
+      await set(target,{
+        hostId:currentUser.uid,status:"waiting",phase:"waiting",round:0,maxPlayers:4,createdAt:Date.now(),
+        players:{[currentUser.uid]:{name,joinedAt:Date.now(),isBot:false}}
+      });
+      created=true; break;
     }
+    if(!created)throw new Error("暫時無法產生房號，請再試一次。");
+    await enterRoom(code);
+  }catch(error){
+    console.error(error); setStatus($("homeStatus"),`建立失敗：${error.message}`,"error"); setHomeDisabled(false);
+  }
+}
 
-    function showSecretResult(player) {
-      secretVisible = true;
+async function joinRoom(){
+  const name=validateName();
+  if(!name||!currentUser)return;
+  const code=$("roomCodeInput").value.replace(/\D/g,"").slice(0,6);
+  $("roomCodeInput").value=code;
+  if(code.length!==6){ setStatus($("homeStatus"),"請輸入完整六位數房號。","error"); return; }
+  setHomeDisabled(true); setStatus($("homeStatus"),"正在加入房間……");
+  try{
+    const target=ref(database,`rooms/${code}`);
+    const snapshot=await get(target);
+    if(!snapshot.exists())throw new Error("找不到這個房間。");
+    if(snapshot.val().status!=="waiting")throw new Error("遊戲已經開始，不能中途加入。");
+    let full=false;
+    const result=await runTransaction(ref(database,`rooms/${code}/players`),players=>{
+      const current=players||{};
+      if(current[currentUser.uid]){ current[currentUser.uid].name=name; return current; }
+      if(Object.keys(current).length>=4){ full=true; return; }
+      current[currentUser.uid]={name,joinedAt:Date.now(),isBot:false};
+      return current;
+    });
+    if(!result.committed)throw new Error(full?"房間已滿，最多四位。":"加入失敗，請再試一次。");
+    await enterRoom(code);
+  }catch(error){
+    console.error(error); setStatus($("homeStatus"),`加入失敗：${error.message}`,"error"); setHomeDisabled(false);
+  }
+}
 
-      secretCard.classList.remove(
-        "clickable"
-      );
+async function enterRoom(code){
+  currentRoomCode=code; $("roomCodeDisplay").textContent=code;
+  if(roomUnsubscribe)roomUnsubscribe();
+  roomUnsubscribe=onValue(ref(database,`rooms/${code}`),snapshot=>{
+    if(!snapshot.exists()){ resetHome(); return; }
+    currentRoomData=snapshot.val();
+    renderRoom(currentRoomData);
+  },error=>{
+    console.error(error);
+    setStatus($("lobbyStatus"),`同步失敗：${error.message}`,"error");
+    setStatus($("gameStatus"),`同步失敗：${error.message}`,"error");
+  });
+  const humanRef=ref(database,`rooms/${code}/players/${currentUser.uid}`);
+  disconnectOperation=onDisconnect(humanRef);
+  await disconnectOperation.remove();
+}
 
-      secretCover.classList.add(
-        "hidden"
-      );
+function renderRoom(room){
+  clearActionTimer();
+  if(!room.players?.[currentUser.uid]){ resetHome(); return; }
+  if(room.status==="waiting")renderLobby(room); else renderGame(room);
+}
 
-      secretResult.classList.remove(
-        "hidden"
-      );
+function renderLobby(room){
+  showPage($("lobbyPage"));
+  const entries=sortedPlayers(room);
+  $("playerCount").textContent=`${entries.length} / 4`;
+  $("playerList").innerHTML="";
+  entries.forEach(([id,p])=>{
+    const item=document.createElement("div"); item.className="player";
+    item.innerHTML=`
+      <div class="player-main">
+        <div class="avatar">${p.isBot?"🤖":id===room.hostId?"👑":"🙂"}</div>
+        <div><span class="player-name"></span>${id===currentUser.uid?'<span class="you">你</span>':""}</div>
+      </div>
+      <div class="badges">
+        ${id===room.hostId?'<span class="badge host">房主</span>':""}
+        ${p.isBot?'<span class="badge bot">機器人</span>':""}
+      </div>`;
+    item.querySelector(".player-name").textContent=p.name;
+    $("playerList").appendChild(item);
+  });
 
-      hideSecretButton.classList.remove(
-        "hidden"
-      );
+  const host=isHost(room);
+  $("hostTools").classList.toggle("hidden",!host);
+  $("startGameButton").classList.toggle("hidden",!host);
 
-      const undercover =
-        player.role === "undercover";
+  const bots=botEntries(room);
+  $("addBotButton").disabled=entries.length>=4;
+  $("removeBotButton").disabled=bots.length===0;
 
-      roleName.textContent =
-        undercover
-          ? "你是臥底"
-          : "你是平民";
+  if(entries.length<3) $("lobbyMessage").textContent="至少需要 3 位玩家。兩位真人可以再加入一位機器人。";
+  else $("lobbyMessage").textContent="人數足夠，可以開始遊戲。遠端互相猜疑，文明的重大進展。";
 
-      roleName.className =
-        `role-name ${
-          undercover
-            ? "undercover"
-            : "civilian"
-        }`;
+  if(host){
+    $("startGameButton").disabled=entries.length<3;
+    $("startGameButton").textContent=entries.length<3?"至少需要 3 位玩家":"開始遊戲";
+  }
+}
 
-      secretWord.textContent =
-        player.word || "載入中";
+async function addBot(){
+  if(!currentRoomData||!isHost(currentRoomData)||currentRoomData.status!=="waiting")return;
+  const entries=sortedPlayers(currentRoomData);
+  if(entries.length>=4)return;
+  const botId=`bot_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+  const usedNames=new Set(entries.map(([,p])=>p.name));
+  const name=BOT_NAMES.find(n=>!usedNames.has(n))||`機器人${botEntries(currentRoomData).length+1}`;
+  await set(roomRef(`players/${botId}`),{name,isBot:true,joinedAt:Date.now()});
+}
+
+async function removeBot(){
+  if(!currentRoomData||!isHost(currentRoomData)||currentRoomData.status!=="waiting")return;
+  const bots=botEntries(currentRoomData);
+  if(!bots.length)return;
+  await remove(roomRef(`players/${bots[bots.length-1][0]}`));
+}
+
+async function startGame(){
+  if(!currentRoomData||!isHost(currentRoomData))return;
+  const ids=Object.keys(currentRoomData.players||{});
+  if(ids.length<3)return;
+  $("startGameButton").disabled=true;
+  try{
+    const pair=randomItem(wordPairs);
+    const undercoverId=randomItem(ids);
+    const order=shuffled(ids);
+    const updates={
+      status:"playing",phase:"reveal",round:(currentRoomData.round||0)+1,
+      undercoverId,civilianWord:pair.civilian,undercoverWord:pair.undercover,
+      pairData:pair,speakerOrder:order,speakerIndex:0,messages:null,
+      eligibleVoteIds:null,tieIds:null,result:null,voteFinalized:false
+    };
+    ids.forEach(id=>{
+      const undercover=id===undercoverId;
+      updates[`players/${id}/role`]=undercover?"undercover":"civilian";
+      updates[`players/${id}/word`]=undercover?pair.undercover:pair.civilian;
+      updates[`players/${id}/ready`]=Boolean(currentRoomData.players[id].isBot);
+      updates[`players/${id}/vote`]=null;
+      updates[`players/${id}/described`]=false;
+    });
+    await update(roomRef(),updates);
+  }catch(error){
+    console.error(error); setStatus($("lobbyStatus"),`開始失敗：${error.message}`,"error"); $("startGameButton").disabled=false;
+  }
+}
+
+function renderGame(room){
+  showPage($("gamePage"));
+  $("roundLabel").textContent=`第 ${room.round||1} 局`;
+  const phase=room.phase||"reveal";
+  if(phase==="reveal")renderReveal(room);
+  else if(phase==="discussion")renderDiscussion(room);
+  else if(phase==="voting")renderVoting(room);
+  else if(phase==="tie")renderTie(room);
+  else if(phase==="result")renderResult(room);
+}
+
+function renderReveal(room){
+  showPhase($("revealPhase"));
+  $("gameTitle").textContent="查看你的秘密詞語";
+  $("gameSubtitle").textContent="真人各自查看；機器人已假裝看完。";
+  const humans=humanEntries(room);
+  const readyCount=humans.filter(([,p])=>p.ready===true).length;
+  const me=room.players[currentUser.uid];
+  $("readyStatus").textContent=`${readyCount} / ${humans.length} 位真人已看完`;
+  $("readyButton").classList.remove("hidden");
+  $("readyButton").disabled=me.ready===true;
+  $("readyButton").textContent=me.ready===true?"已確認，等待其他玩家":"我已經看完了";
+  if(secretVisible)showSecret(me); else hideSecret();
+
+  if(isHost(room)&&readyCount===humans.length&&humans.length>=1){
+    actionTimer=setTimeout(async()=>{
+      if(currentRoomData?.phase==="reveal"){
+        await update(roomRef(),{phase:"discussion",speakerIndex:0});
+      }
+    },700);
+  }
+}
+
+function hideSecret(){
+  secretVisible=false; $("secretCard").classList.add("clickable");
+  $("secretCover").classList.remove("hidden"); $("secretResult").classList.add("hidden");
+  $("hideSecretButton").classList.add("hidden");
+}
+function showSecret(player){
+  secretVisible=true; $("secretCard").classList.remove("clickable");
+  $("secretCover").classList.add("hidden"); $("secretResult").classList.remove("hidden");
+  $("hideSecretButton").classList.remove("hidden");
+  const undercover=player.role==="undercover";
+  $("roleName").textContent=undercover?"你是臥底":"你是平民";
+  $("roleName").className=`role ${undercover?"undercover":"civilian"}`;
+  $("secretWord").textContent=player.word||"載入中";
+}
+async function markReady(){
+  await update(roomRef(`players/${currentUser.uid}`),{ready:true});
+  hideSecret();
+}
+
+function renderDiscussion(room){
+  showPhase($("discussionPhase"));
+  $("gameTitle").textContent="文字描述階段";
+  $("gameSubtitle").textContent="依順序輸入一句描述，不能直接說出詞語。";
+  const order=room.speakerOrder||[];
+  const index=room.speakerIndex||0;
+  const speakerId=order[index];
+  const speaker=room.players?.[speakerId];
+  $("speakerName").textContent=speaker?.name||"等待中";
+  $("speakerPosition").textContent=`第 ${Math.min(index+1,order.length)} 位，共 ${order.length} 位`;
+  $("speakerOrderList").innerHTML="";
+  order.forEach((id,i)=>{
+    const el=document.createElement("span"); el.className=`order ${i===index?"active":""}`;
+    el.textContent=`${i+1}. ${playerName(room,id)}`; $("speakerOrderList").appendChild(el);
+  });
+
+  renderMessages(room,speakerId);
+  const allDone=index>=order.length;
+  $("descriptionInputArea").classList.add("hidden");
+  $("botThinking").classList.add("hidden");
+  $("startVoteButton").classList.add("hidden");
+
+  if(allDone){
+    $("speakerName").textContent="全部玩家已回答";
+    $("speakerPosition").textContent="";
+    $("discussionStatus").textContent="所有描述都已送出，房主可以開始投票。";
+    if(isHost(room))$("startVoteButton").classList.remove("hidden");
+    return;
+  }
+
+  if(speaker?.isBot){
+    $("discussionStatus").textContent="輪到機器人回答。";
+    $("botThinking").classList.remove("hidden");
+    if(isHost(room)&&!speaker.described)scheduleBotDescription(room,speakerId);
+  }else if(speakerId===currentUser.uid){
+    $("discussionStatus").textContent=speaker.described?"你的描述已送出，等待下一位。":"輪到你了，請輸入一句描述。";
+    if(!speaker.described){
+      $("descriptionInputArea").classList.remove("hidden");
+      $("descriptionInput").focus();
     }
+  }else{
+    $("discussionStatus").textContent=`等待 ${speaker?.name||"玩家"} 輸入描述。`;
+  }
+}
 
-    async function markReady() {
-      await update(
-        ref(
-          database,
-          `rooms/${currentRoomCode}/players/${currentUser.uid}`
-        ),
-        {
-          ready:
-            true
+function renderMessages(room,currentSpeakerId){
+  $("chatList").innerHTML="";
+  const messages=room.messages||{};
+  const order=room.speakerOrder||[];
+  order.forEach(id=>{
+    if(!messages[id])return;
+    const item=document.createElement("div");
+    item.className=`chat-item ${id===currentSpeakerId?"chat-current":""}`;
+    item.innerHTML='<div class="chat-name"></div><div class="chat-text"></div>';
+    item.querySelector(".chat-name").textContent=`${playerName(room,id)}${room.players[id].isBot?" 🤖":""}`;
+    item.querySelector(".chat-text").textContent=messages[id].text;
+    $("chatList").appendChild(item);
+  });
+}
+
+async function sendDescription(){
+  if(!currentRoomData||currentRoomData.phase!=="discussion")return;
+  const order=currentRoomData.speakerOrder||[];
+  const index=currentRoomData.speakerIndex||0;
+  const speakerId=order[index];
+  if(speakerId!==currentUser.uid)return;
+  const text=$("descriptionInput").value.trim();
+  if(!text){ setStatus($("gameStatus"),"請先輸入描述。","error"); return; }
+  const ownWord=currentRoomData.players[currentUser.uid].word||"";
+  if(ownWord&&text.includes(ownWord)){
+    setStatus($("gameStatus"),"不能直接把自己的詞語寫出來。這樣不是推理，是自首。","error"); return;
+  }
+  $("sendDescriptionButton").disabled=true;
+  try{
+    await submitDescription(currentUser.uid,text,index);
+    $("descriptionInput").value="";
+    setStatus($("gameStatus"),"描述已送出。","success");
+  }finally{
+    $("sendDescriptionButton").disabled=false;
+  }
+}
+
+async function submitDescription(playerId,text,expectedIndex){
+  const lock=await runTransaction(roomRef(`messages/${playerId}`),value=>{
+    if(value)return;
+    return {text,createdAt:Date.now()};
+  });
+  if(!lock.committed)return;
+  await update(roomRef(`players/${playerId}`),{described:true});
+  const snap=await get(roomRef());
+  if(!snap.exists())return;
+  const room=snap.val();
+  if(room.phase!=="discussion"||(room.speakerIndex||0)!==expectedIndex)return;
+  await update(roomRef(),{speakerIndex:expectedIndex+1});
+}
+
+function scheduleBotDescription(room,botId){
+  const expectedIndex=room.speakerIndex||0;
+  actionTimer=setTimeout(async()=>{
+    const snap=await get(roomRef());
+    if(!snap.exists())return;
+    const latest=snap.val();
+    if(latest.phase!=="discussion")return;
+    const order=latest.speakerOrder||[];
+    if(order[latest.speakerIndex||0]!==botId||latest.players?.[botId]?.described)return;
+    const role=latest.players[botId].role;
+    const hints=role==="undercover"
+      ? latest.pairData?.undercoverHints
+      : latest.pairData?.civilianHints;
+    const fallback=["生活中很常見","有些人很喜歡","通常有不只一種形式"];
+    const used=new Set(Object.values(latest.messages||{}).map(m=>m.text));
+    const candidates=(hints||fallback).filter(h=>!used.has(h));
+    const text=randomItem(candidates.length?candidates:(hints||fallback));
+    await submitDescription(botId,text,expectedIndex);
+  },1800+Math.floor(Math.random()*1500));
+}
+
+async function beginVoting(){
+  if(!currentRoomData||!isHost(currentRoomData))return;
+  const updates={phase:"voting",eligibleVoteIds:null,voteFinalized:false};
+  Object.keys(currentRoomData.players||{}).forEach(id=>updates[`players/${id}/vote`]=null);
+  await update(roomRef(),updates);
+}
+
+function renderVoting(room){
+  showPhase($("votingPhase"));
+  $("gameTitle").textContent="投票時間";
+  $("gameSubtitle").textContent="選出你認為是臥底的人。機器人也會投票，因為顯然它也有意見。";
+  const players=room.players||{};
+  const ids=Object.keys(players);
+  const humans=humanEntries(room).map(([id])=>id);
+  const bots=botEntries(room).map(([id])=>id);
+  const me=players[currentUser.uid];
+  let eligible=room.eligibleVoteIds ? Object.values(room.eligibleVoteIds) : ids;
+  const candidates=eligible.filter(id=>id!==currentUser.uid);
+  $("voteInstruction").textContent=room.eligibleVoteIds?"平票重投：只能從平票玩家中選擇。":"選出你認為是臥底的玩家。";
+  $("voteList").innerHTML="";
+  candidates.forEach(id=>{
+    const btn=document.createElement("button"); btn.type="button";
+    btn.className=`vote-btn ${me.vote===id?"selected":""}`;
+    btn.disabled=Boolean(me.vote);
+    btn.innerHTML=`<span></span><span>${me.vote===id?"已投票":"選擇"}</span>`;
+    btn.querySelector("span").textContent=`${playerName(room,id)}${players[id].isBot?" 🤖":""}`;
+    btn.addEventListener("click",()=>submitVote(id));
+    $("voteList").appendChild(btn);
+  });
+  const voteCount=ids.filter(id=>Boolean(players[id].vote)).length;
+  $("voteStatus").textContent=`${voteCount} / ${ids.length} 位玩家已投票`;
+
+  if(isHost(room)){
+    bots.forEach(botId=>{
+      if(!players[botId].vote)scheduleBotVote(room,botId,eligible);
+    });
+    if(voteCount===ids.length)finalizeVote(room);
+  }
+}
+
+async function submitVote(targetId){
+  const me=currentRoomData?.players?.[currentUser.uid];
+  if(!me||me.vote)return;
+  await update(roomRef(`players/${currentUser.uid}`),{vote:targetId});
+}
+
+function scheduleBotVote(room,botId,eligibleIds){
+  actionTimer=setTimeout(async()=>{
+    const snap=await get(roomRef());
+    if(!snap.exists())return;
+    const latest=snap.val();
+    if(latest.phase!=="voting"||latest.players?.[botId]?.vote)return;
+    const candidates=(latest.eligibleVoteIds?Object.values(latest.eligibleVoteIds):Object.keys(latest.players||{}))
+      .filter(id=>id!==botId);
+    if(!candidates.length)return;
+    const messages=latest.messages||{};
+    const botWord=latest.players[botId].word;
+    let scored=candidates.map(id=>{
+      let score=Math.random();
+      const text=messages[id]?.text||"";
+      if(text&&botWord&&text.includes(botWord))score+=2;
+      if(latest.players[id].isBot)score-=.15;
+      return {id,score};
+    }).sort((a,b)=>b.score-a.score);
+    await update(roomRef(`players/${botId}`),{vote:scored[0].id});
+  },1400+Math.floor(Math.random()*1300));
+}
+
+async function finalizeVote(room){
+  if(voteFinalizing)return;
+  voteFinalizing=true;
+  try{
+    const lock=await runTransaction(roomRef("voteFinalized"),value=>value===true?undefined:true);
+    if(!lock.committed)return;
+    const counts={};
+    Object.values(room.players||{}).forEach(p=>{ if(p.vote)counts[p.vote]=(counts[p.vote]||0)+1; });
+    const values=Object.values(counts);
+    if(!values.length){ await update(roomRef(),{voteFinalized:false}); return; }
+    const max=Math.max(...values);
+    const top=Object.keys(counts).filter(id=>counts[id]===max);
+    if(top.length>1){
+      await update(roomRef(),{phase:"tie",tieIds:top,voteFinalized:false});
+    }else{
+      const eliminatedId=top[0];
+      await update(roomRef(),{
+        phase:"result",voteFinalized:false,
+        result:{eliminatedId,winner:eliminatedId===room.undercoverId?"civilian":"undercover"}
+      });
+    }
+  }catch(error){
+    console.error(error); await update(roomRef(),{voteFinalized:false});
+  }finally{ voteFinalizing=false; }
+}
+
+function renderTie(room){
+  showPhase($("tiePhase"));
+  $("gameTitle").textContent="投票平手";
+  $("gameSubtitle").textContent="大家成功把事情拖進下一輪，十分符合人類組織運作。";
+  const ids=room.tieIds||[];
+  $("tieDescription").textContent=`${ids.map(id=>playerName(room,id)).join("、")} 得票相同，需要重新投票。`;
+  $("revoteButton").classList.toggle("hidden",!isHost(room));
+}
+
+async function beginRevote(){
+  if(!currentRoomData||!isHost(currentRoomData))return;
+  const tieIds=currentRoomData.tieIds||[];
+  const updates={phase:"voting",eligibleVoteIds:tieIds,tieIds:null,voteFinalized:false};
+  Object.keys(currentRoomData.players||{}).forEach(id=>updates[`players/${id}/vote`]=null);
+  await update(roomRef(),updates);
+}
+
+function renderResult(room){
+  showPhase($("resultPhase"));
+  $("gameTitle").textContent="本局結果";
+  $("gameSubtitle").textContent="真相出現了，友情是否仍存在由你們自行負責。";
+  const result=room.result||{};
+  const civilians=result.winner==="civilian";
+  $("resultIcon").textContent=civilians?"🎉":"🕵️";
+  $("resultTitle").textContent=civilians?"平民獲勝":"臥底獲勝";
+  const eliminated=playerName(room,result.eliminatedId);
+  $("resultSubtitle").textContent=civilians?`${eliminated} 被成功找出。`:`${eliminated} 被淘汰，但並不是臥底。`;
+  $("undercoverName").textContent=`${playerName(room,room.undercoverId)}${room.players?.[room.undercoverId]?.isBot?" 🤖":""}`;
+  $("wordReveal").textContent=`平民詞：${room.civilianWord}｜臥底詞：${room.undercoverWord}`;
+  $("playAgainButton").classList.toggle("hidden",!isHost(room));
+}
+
+async function playAgain(){
+  if(!currentRoomData||!isHost(currentRoomData))return;
+  const updates={
+    status:"waiting",phase:"waiting",undercoverId:null,civilianWord:null,undercoverWord:null,pairData:null,
+    speakerOrder:null,speakerIndex:null,messages:null,eligibleVoteIds:null,tieIds:null,result:null,voteFinalized:false
+  };
+  Object.keys(currentRoomData.players||{}).forEach(id=>{
+    updates[`players/${id}/role`]=null; updates[`players/${id}/word`]=null;
+    updates[`players/${id}/ready`]=null; updates[`players/${id}/vote`]=null; updates[`players/${id}/described`]=null;
+  });
+  secretVisible=false;
+  await update(roomRef(),updates);
+}
+
+async function leaveRoom(){
+  if(!currentRoomCode||!currentUser)return;
+  try{
+    clearActionTimer();
+    if(disconnectOperation)await disconnectOperation.cancel();
+    const target=roomRef();
+    const snapshot=await get(target);
+    if(snapshot.exists()){
+      const room=snapshot.val();
+      await remove(roomRef(`players/${currentUser.uid}`));
+      if(room.hostId===currentUser.uid){
+        const latest=await get(target);
+        if(latest.exists()){
+          const humans=humanEntries(latest.val());
+          if(!humans.length)await remove(target);
+          else await update(target,{hostId:humans[0][0]});
         }
-      );
-
-      showSecretCover();
-    }
-
-    async function beginDiscussion() {
-      if (
-        !currentRoomData ||
-        currentRoomData.phase !== "reveal"
-      ) {
-        return;
-      }
-
-      await update(
-        ref(
-          database,
-          `rooms/${currentRoomCode}`
-        ),
-        {
-          phase:
-            "discussion",
-
-          speakerIndex:
-            0
-        }
-      );
-    }
-
-    function renderDiscussionPhase(room) {
-      showGamePhase(discussionPhase);
-
-      gameTitle.textContent =
-        "描述階段";
-
-      gameSubtitle.textContent =
-        "依順序描述你的詞語，不能直接說出答案。";
-
-      const order =
-        room.speakerOrder || [];
-
-      const index =
-        room.speakerIndex || 0;
-
-      const currentSpeakerId =
-        order[index];
-
-      speakerName.textContent =
-        getPlayerDisplayName(
-          room,
-          currentSpeakerId
-        );
-
-      speakerPosition.textContent =
-        `第 ${index + 1} 位，共 ${order.length} 位`;
-
-      speakerOrderList.innerHTML = "";
-
-      order.forEach(
-        function(playerId, orderIndex) {
-          const item =
-            document.createElement("span");
-
-          item.className =
-            `order-item ${
-              orderIndex === index
-                ? "active"
-                : ""
-            }`;
-
-          item.textContent =
-            `${orderIndex + 1}. ${
-              getPlayerDisplayName(
-                room,
-                playerId
-              )
-            }`;
-
-          speakerOrderList.appendChild(item);
-        }
-      );
-
-      const isHost =
-        isCurrentUserHost(room);
-
-      if (
-        isHost &&
-        index < order.length - 1
-      ) {
-        nextSpeakerButton.classList.remove(
-          "hidden"
-        );
-
-        startVoteButton.classList.add(
-          "hidden"
-        );
-      } else if (
-        isHost &&
-        index >= order.length - 1
-      ) {
-        nextSpeakerButton.classList.add(
-          "hidden"
-        );
-
-        startVoteButton.classList.remove(
-          "hidden"
-        );
-      } else {
-        nextSpeakerButton.classList.add(
-          "hidden"
-        );
-
-        startVoteButton.classList.add(
-          "hidden"
-        );
       }
     }
-
-    async function nextSpeaker() {
-      const order =
-        currentRoomData.speakerOrder || [];
-
-      const currentIndex =
-        currentRoomData.speakerIndex || 0;
-
-      if (
-        currentIndex >= order.length - 1
-      ) {
-        return;
-      }
-
-      await update(
-        ref(
-          database,
-          `rooms/${currentRoomCode}`
-        ),
-        {
-          speakerIndex:
-            currentIndex + 1
-        }
-      );
-    }
-
-    async function beginVoting() {
-      const updates = {
-        phase:
-          "voting",
-
-        eligibleVoteIds:
-          null
-      };
-
-      Object.keys(
-        currentRoomData.players || {}
-      ).forEach(
-        function(playerId) {
-          updates[
-            `players/${playerId}/vote`
-          ] = null;
-        }
-      );
-
-      await update(
-        ref(
-          database,
-          `rooms/${currentRoomCode}`
-        ),
-        updates
-      );
-    }
-
-    function renderVotingPhase(room) {
-      showGamePhase(votingPhase);
-
-      gameTitle.textContent =
-        "投票時間";
-
-      gameSubtitle.textContent =
-        "選出你認為是臥底的人。友情通常活不過這個階段。";
-
-      const players =
-        room.players || {};
-
-      const currentPlayer =
-        players[currentUser.uid];
-
-      const allPlayerIds =
-        Object.keys(players);
-
-      const eligibleIds =
-        room.eligibleVoteIds
-          ? Object.values(
-              room.eligibleVoteIds
-            )
-          : allPlayerIds;
-
-      const candidates =
-        eligibleIds.filter(
-          playerId =>
-            playerId !== currentUser.uid
-        );
-
-      voteInstruction.textContent =
-        room.eligibleVoteIds
-          ? "平票重投：只能從平票玩家中選擇。"
-          : "選出你認為是臥底的玩家。";
-
-      voteList.innerHTML = "";
-
-      candidates.forEach(
-        function(playerId) {
-          const button =
-            document.createElement("button");
-
-          button.type =
-            "button";
-
-          button.className =
-            "vote-button";
-
-          if (
-            currentPlayer.vote === playerId
-          ) {
-            button.classList.add(
-              "selected"
-            );
-          }
-
-          button.disabled =
-            Boolean(currentPlayer.vote);
-
-          button.innerHTML = `
-            <span>
-              ${
-                getPlayerDisplayName(
-                  room,
-                  playerId
-                )
-              }
-            </span>
-
-            <span>
-              ${
-                currentPlayer.vote === playerId
-                  ? "已投票"
-                  : "選擇"
-              }
-            </span>
-          `;
-
-          button.addEventListener(
-            "click",
-            function() {
-              submitVote(playerId);
-            }
-          );
-
-          voteList.appendChild(button);
-        }
-      );
-
-      const voteCount =
-        allPlayerIds.filter(
-          playerId =>
-            Boolean(players[playerId].vote)
-        ).length;
-
-      voteStatus.textContent =
-        `${voteCount} / ${allPlayerIds.length} 位玩家已投票`;
-
-      if (
-        voteCount === allPlayerIds.length &&
-        isCurrentUserHost(room)
-      ) {
-        finalizeVote(room);
-      }
-    }
-
-    async function submitVote(targetId) {
-      const currentPlayer =
-        currentRoomData.players[
-          currentUser.uid
-        ];
-
-      if (currentPlayer.vote) {
-        return;
-      }
-
-      await update(
-        ref(
-          database,
-          `rooms/${currentRoomCode}/players/${currentUser.uid}`
-        ),
-        {
-          vote:
-            targetId
-        }
-      );
-    }
-
-    async function finalizeVote(room) {
-      if (voteFinalizing) {
-        return;
-      }
-
-      voteFinalizing = true;
-
-      try {
-        const lockRef =
-          ref(
-            database,
-            `rooms/${currentRoomCode}/voteFinalized`
-          );
-
-        const lockResult =
-          await runTransaction(
-            lockRef,
-            function(value) {
-              if (value === true) {
-                return;
-              }
-
-              return true;
-            }
-          );
-
-        if (!lockResult.committed) {
-          return;
-        }
-
-        const voteCounts = {};
-
-        Object.values(
-          room.players || {}
-        ).forEach(
-          function(player) {
-            if (!player.vote) {
-              return;
-            }
-
-            voteCounts[player.vote] =
-              (voteCounts[player.vote] || 0) + 1;
-          }
-        );
-
-        const highestVote =
-          Math.max(
-            ...Object.values(voteCounts)
-          );
-
-        const highestIds =
-          Object.keys(voteCounts)
-            .filter(
-              playerId =>
-                voteCounts[playerId] ===
-                highestVote
-            );
-
-        if (highestIds.length > 1) {
-          await update(
-            ref(
-              database,
-              `rooms/${currentRoomCode}`
-            ),
-            {
-              phase:
-                "tie",
-
-              tieIds:
-                highestIds,
-
-              voteFinalized:
-                false
-            }
-          );
-
-          return;
-        }
-
-        const eliminatedId =
-          highestIds[0];
-
-        const civiliansWin =
-          eliminatedId ===
-          room.undercoverId;
-
-        await update(
-          ref(
-            database,
-            `rooms/${currentRoomCode}`
-          ),
-          {
-            phase:
-              "result",
-
-            voteFinalized:
-              false,
-
-            result: {
-              eliminatedId:
-                eliminatedId,
-
-              winner:
-                civiliansWin
-                  ? "civilian"
-                  : "undercover"
-            }
-          }
-        );
-      } catch (error) {
-        console.error(error);
-
-        await update(
-          ref(
-            database,
-            `rooms/${currentRoomCode}`
-          ),
-          {
-            voteFinalized:
-              false
-          }
-        );
-      } finally {
-        voteFinalizing = false;
-      }
-    }
-
-    function renderTiePhase(room) {
-      showGamePhase(tiePhase);
-
-      gameTitle.textContent =
-        "平票";
-
-      gameSubtitle.textContent =
-        "大家很有默契地沒有解決任何事情。";
-
-      const tieIds =
-        room.tieIds || [];
-
-      const names =
-        tieIds.map(
-          playerId =>
-            getPlayerDisplayName(
-              room,
-              playerId
-            )
-        );
-
-      tieDescription.textContent =
-        `${names.join("、")} 得票相同，需要重新投票。`;
-
-      if (isCurrentUserHost(room)) {
-        revoteButton.classList.remove(
-          "hidden"
-        );
-      } else {
-        revoteButton.classList.add(
-          "hidden"
-        );
-      }
-    }
-
-    async function beginRevote() {
-      const tieIds =
-        currentRoomData.tieIds || [];
-
-      const updates = {
-        phase:
-          "voting",
-
-        eligibleVoteIds:
-          tieIds,
-
-        tieIds:
-          null,
-
-        voteFinalized:
-          false
-      };
-
-      Object.keys(
-        currentRoomData.players || {}
-      ).forEach(
-        function(playerId) {
-          updates[
-            `players/${playerId}/vote`
-          ] = null;
-        }
-      );
-
-      await update(
-        ref(
-          database,
-          `rooms/${currentRoomCode}`
-        ),
-        updates
-      );
-    }
-
-    function renderResultPhase(room) {
-      showGamePhase(resultPhase);
-
-      gameTitle.textContent =
-        "本局結果";
-
-      gameSubtitle.textContent =
-        "真相終於出現，友情是否還在則不保證。";
-
-      const result =
-        room.result || {};
-
-      const civiliansWin =
-        result.winner === "civilian";
-
-      resultIcon.textContent =
-        civiliansWin
-          ? "🎉"
-          : "🕵️";
-
-      resultTitle.textContent =
-        civiliansWin
-          ? "平民獲勝"
-          : "臥底獲勝";
-
-      const eliminatedName =
-        getPlayerDisplayName(
-          room,
-          result.eliminatedId
-        );
-
-      resultSubtitle.textContent =
-        civiliansWin
-          ? `${eliminatedName} 被成功找出。`
-          : `${eliminatedName} 被淘汰，但他不是臥底。`;
-
-      undercoverName.textContent =
-        getPlayerDisplayName(
-          room,
-          room.undercoverId
-        );
-
-      wordReveal.textContent =
-        `平民詞：${room.civilianWord}｜臥底詞：${room.undercoverWord}`;
-
-      if (isCurrentUserHost(room)) {
-        playAgainButton.classList.remove(
-          "hidden"
-        );
-      } else {
-        playAgainButton.classList.add(
-          "hidden"
-        );
-      }
-    }
-
-    async function playAgain() {
-      const updates = {
-        status:
-          "waiting",
-
-        phase:
-          "waiting",
-
-        undercoverId:
-          null,
-
-        civilianWord:
-          null,
-
-        undercoverWord:
-          null,
-
-        speakerOrder:
-          null,
-
-        speakerIndex:
-          null,
-
-        eligibleVoteIds:
-          null,
-
-        tieIds:
-          null,
-
-        result:
-          null,
-
-        voteFinalized:
-          false
-      };
-
-      Object.keys(
-        currentRoomData.players || {}
-      ).forEach(
-        function(playerId) {
-          updates[
-            `players/${playerId}/role`
-          ] = null;
-
-          updates[
-            `players/${playerId}/word`
-          ] = null;
-
-          updates[
-            `players/${playerId}/ready`
-          ] = null;
-
-          updates[
-            `players/${playerId}/vote`
-          ] = null;
-        }
-      );
-
-      secretVisible = false;
-
-      await update(
-        ref(
-          database,
-          `rooms/${currentRoomCode}`
-        ),
-        updates
-      );
-    }
-
-    async function leaveRoom() {
-      if (
-        !currentRoomCode ||
-        !currentUser
-      ) {
-        return;
-      }
-
-      try {
-        if (disconnectOperation) {
-          await disconnectOperation.cancel();
-        }
-
-        const roomRef =
-          ref(
-            database,
-            `rooms/${currentRoomCode}`
-          );
-
-        const roomSnapshot =
-          await get(roomRef);
-
-        if (roomSnapshot.exists()) {
-          const room =
-            roomSnapshot.val();
-
-          await remove(
-            ref(
-              database,
-              `rooms/${currentRoomCode}/players/${currentUser.uid}`
-            )
-          );
-
-          if (
-            room.hostId === currentUser.uid
-          ) {
-            const latest =
-              await get(roomRef);
-
-            if (latest.exists()) {
-              const remainingPlayers =
-                getSortedPlayers(
-                  latest.val()
-                );
-
-              if (
-                remainingPlayers.length === 0
-              ) {
-                await remove(roomRef);
-              } else {
-                await update(
-                  roomRef,
-                  {
-                    hostId:
-                      remainingPlayers[0][0]
-                  }
-                );
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        resetToHome();
-      }
-    }
-
-    function resetToHome() {
-      if (roomUnsubscribe) {
-        roomUnsubscribe();
-        roomUnsubscribe = null;
-      }
-
-      currentRoomCode = null;
-      currentRoomData = null;
-      disconnectOperation = null;
-      secretVisible = false;
-      voteFinalizing = false;
-
-      roomCodeInput.value = "";
-      playerList.innerHTML = "";
-      voteList.innerHTML = "";
-
-      showPage(homePage);
-
-      setHomeButtonsDisabled(false);
-
-      setStatus(
-        homeStatus,
-        "連線成功，可以建立或加入房間。",
-        "success"
-      );
-    }
-
-    async function copyRoomCode() {
-      if (!currentRoomCode) {
-        return;
-      }
-
-      try {
-        await navigator.clipboard.writeText(
-          currentRoomCode
-        );
-
-        copyRoomButton.textContent =
-          "已複製";
-
-        setTimeout(
-          function() {
-            copyRoomButton.textContent =
-              "複製房號";
-          },
-          1500
-        );
-      } catch (error) {
-        setStatus(
-          lobbyStatus,
-          `房號：${currentRoomCode}`,
-          "success"
-        );
-      }
-    }
-
-    roomCodeInput.addEventListener(
-      "input",
-      function() {
-        roomCodeInput.value =
-          roomCodeInput.value
-            .replace(/\D/g, "")
-            .slice(0, 6);
-      }
-    );
-
-    createRoomButton.addEventListener(
-      "click",
-      createRoom
-    );
-
-    joinRoomButton.addEventListener(
-      "click",
-      joinRoom
-    );
-
-    startGameButton.addEventListener(
-      "click",
-      startGame
-    );
-
-    leaveRoomButton.addEventListener(
-      "click",
-      leaveRoom
-    );
-
-    gameLeaveButton.addEventListener(
-      "click",
-      leaveRoom
-    );
-
-    copyRoomButton.addEventListener(
-      "click",
-      copyRoomCode
-    );
-
-    secretCard.addEventListener(
-      "click",
-      function() {
-        if (
-          !secretCard.classList.contains(
-            "clickable"
-          )
-        ) {
-          return;
-        }
-
-        const player =
-          currentRoomData.players[
-            currentUser.uid
-          ];
-
-        showSecretResult(player);
-      }
-    );
-
-    hideSecretButton.addEventListener(
-      "click",
-      showSecretCover
-    );
-
-    readyButton.addEventListener(
-      "click",
-      markReady
-    );
-
-    nextSpeakerButton.addEventListener(
-      "click",
-      nextSpeaker
-    );
-
-    startVoteButton.addEventListener(
-      "click",
-      beginVoting
-    );
-
-    revoteButton.addEventListener(
-      "click",
-      beginRevote
-    );
-
-    playAgainButton.addEventListener(
-      "click",
-      playAgain
-    );
-
-    setHomeButtonsDisabled(true);
-
-    initializeAuthentication();
-  </script>
+  }catch(error){ console.error(error); }
+  finally{ resetHome(); }
+}
+
+function resetHome(){
+  clearActionTimer();
+  if(roomUnsubscribe){ roomUnsubscribe(); roomUnsubscribe=null; }
+  currentRoomCode=null; currentRoomData=null; disconnectOperation=null; secretVisible=false; voteFinalizing=false;
+  $("roomCodeInput").value=""; $("playerList").innerHTML=""; $("chatList").innerHTML=""; $("voteList").innerHTML="";
+  showPage($("homePage")); setHomeDisabled(false);
+  setStatus($("homeStatus"),"連線成功，可以建立或加入房間。","success");
+}
+
+async function copyCode(){
+  if(!currentRoomCode)return;
+  try{
+    await navigator.clipboard.writeText(currentRoomCode);
+    $("copyRoomButton").textContent="已複製";
+    setTimeout(()=>$("copyRoomButton").textContent="複製房號",1400);
+  }catch{ setStatus($("lobbyStatus"),`房號：${currentRoomCode}`,"success"); }
+}
+
+$("roomCodeInput").addEventListener("input",()=>{$("roomCodeInput").value=$("roomCodeInput").value.replace(/\D/g,"").slice(0,6);});
+$("createRoomButton").addEventListener("click",createRoom);
+$("joinRoomButton").addEventListener("click",joinRoom);
+$("copyRoomButton").addEventListener("click",copyCode);
+$("addBotButton").addEventListener("click",addBot);
+$("removeBotButton").addEventListener("click",removeBot);
+$("startGameButton").addEventListener("click",startGame);
+$("leaveRoomButton").addEventListener("click",leaveRoom);
+$("gameLeaveButton").addEventListener("click",leaveRoom);
+$("secretCard").addEventListener("click",()=>{
+  if(!$("secretCard").classList.contains("clickable"))return;
+  showSecret(currentRoomData.players[currentUser.uid]);
+});
+$("hideSecretButton").addEventListener("click",hideSecret);
+$("readyButton").addEventListener("click",markReady);
+$("sendDescriptionButton").addEventListener("click",sendDescription);
+$("descriptionInput").addEventListener("keydown",event=>{ if(event.key==="Enter")sendDescription(); });
+$("startVoteButton").addEventListener("click",beginVoting);
+$("revoteButton").addEventListener("click",beginRevote);
+$("playAgainButton").addEventListener("click",playAgain);
+
+setHomeDisabled(true);
+initAuth();
+</script>
 </body>
 </html>
