@@ -1916,50 +1916,76 @@
       }
     }
 
-    function renderRevealPhase(room) {
-      showGamePhase(revealPhase);
+function renderRevealPhase(room) {
+  showGamePhase(revealPhase);
 
-      gameTitle.textContent =
-        "查看你的秘密詞語";
+  gameTitle.textContent =
+    "查看你的秘密詞語";
 
-      gameSubtitle.textContent =
-        "請自己看，不要把手機舉得像在展示新買的包。";
+  gameSubtitle.textContent =
+    "請自己看，不要讓其他玩家看到你的內容。";
 
-      const players =
-        Object.values(room.players || {});
+  const players =
+    Object.values(room.players || {});
 
-      const readyCount =
-        players.filter(
-          player => player.ready
-        ).length;
+  const currentPlayer =
+    room.players[currentUser.uid];
 
-      readyStatus.textContent =
-        `${readyCount} / ${players.length} 位玩家已看完`;
+  if (!currentPlayer) {
+    setStatus(
+      gameStatus,
+      "找不到你的玩家資料，請重新加入房間。",
+      "error"
+    );
 
-      const currentPlayer =
-        room.players[currentUser.uid];
+    return;
+  }
 
-      readyButton.disabled =
-        Boolean(currentPlayer.ready);
-
-      readyButton.textContent =
-        currentPlayer.ready
-          ? "等待其他玩家"
-          : "我已經看完了";
-
-      if (secretVisible) {
-        showSecretResult(currentPlayer);
-      } else {
-        showSecretCover();
+  const readyCount =
+    players.filter(
+      function(player) {
+        return player.ready === true;
       }
+    ).length;
 
-      if (
-        readyCount === players.length &&
-        isCurrentUserHost(room)
-      ) {
-        beginDiscussion();
-      }
-    }
+  readyStatus.textContent =
+    `${readyCount} / ${players.length} 位玩家已看完`;
+
+  /*
+    強制顯示按鈕。
+    房主和一般玩家都必須確認看完。
+  */
+  readyButton.classList.remove("hidden");
+
+  const hasReadied =
+    currentPlayer.ready === true;
+
+  readyButton.disabled =
+    hasReadied;
+
+  readyButton.textContent =
+    hasReadied
+      ? "已確認，等待其他玩家"
+      : "我已經看完了";
+
+  if (secretVisible) {
+    showSecretResult(currentPlayer);
+  } else {
+    showSecretCover();
+  }
+
+  /*
+    所有人都按下確認後，
+    才由房主切換到描述階段。
+  */
+  if (
+    readyCount === players.length &&
+    players.length >= 2 &&
+    isCurrentUserHost(room)
+  ) {
+    beginDiscussion();
+  }
+}
 
     function showSecretCover() {
       secretVisible = false;
