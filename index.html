@@ -2,7 +2,6 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -17,7 +16,7 @@
 
     :root {
       --background: #111322;
-      --card: rgba(31, 34, 58, 0.94);
+      --card: rgba(31, 34, 58, 0.95);
       --card-light: rgba(255, 255, 255, 0.07);
       --primary: #8d78ff;
       --primary-dark: #715be8;
@@ -136,9 +135,6 @@
       background: rgba(255, 255, 255, 0.07);
       color: var(--text);
       font-size: 16px;
-      transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
     }
 
     input::placeholder {
@@ -372,7 +368,6 @@
 
 <body>
   <main class="app">
-    <!-- 首頁 -->
     <section
       id="homePage"
       class="card"
@@ -437,7 +432,6 @@
       </div>
     </section>
 
-    <!-- 房間大廳 -->
     <section
       id="lobbyPage"
       class="card hidden"
@@ -513,9 +507,6 @@
   </main>
 
   <script type="module">
-    /*
-      Firebase 官方 CDN 模組
-    */
     import {
       initializeApp
     } from
@@ -531,6 +522,8 @@
       getDatabase,
       ref,
       get,
+      set,
+      update,
       remove,
       onValue,
       onDisconnect,
@@ -538,9 +531,6 @@
     } from
       "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
 
-    /*
-      你的 Firebase 設定
-    */
     const firebaseConfig = {
       apiKey:
         "AIzaSyD0cfGcTfYxkvmNQT2gUdyL0eIaxJYth3o",
@@ -575,7 +565,6 @@
 
     let currentUser = null;
     let currentRoomCode = null;
-    let currentRoomRef = null;
     let roomUnsubscribe = null;
     let disconnectOperation = null;
 
@@ -634,6 +623,11 @@
         `status ${type}`.trim();
     }
 
+    function setHomeButtonsDisabled(disabled) {
+      createRoomButton.disabled = disabled;
+      joinRoomButton.disabled = disabled;
+    }
+
     function getPlayerName() {
       return playerNameInput.value.trim();
     }
@@ -673,18 +667,13 @@
       );
     }
 
-    function setHomeButtonsDisabled(disabled) {
-      createRoomButton.disabled = disabled;
-      joinRoomButton.disabled = disabled;
-    }
-
     async function initializeAuthentication() {
       try {
-        const userCredential =
+        const result =
           await signInAnonymously(auth);
 
         currentUser =
-          userCredential.user;
+          result.user;
 
         setStatus(
           homeStatus,
@@ -694,10 +683,7 @@
 
         setHomeButtonsDisabled(false);
       } catch (error) {
-        console.error(
-          "匿名登入失敗：",
-          error
-        );
+        console.error(error);
 
         setStatus(
           homeStatus,
@@ -723,6 +709,7 @@
       );
 
       try {
+        let roomCode = "";
         let roomCreated = false;
 
         for (
@@ -730,7 +717,7 @@
           attempt < 10;
           attempt++
         ) {
-          const roomCode =
+          roomCode =
             generateRoomCode();
 
           const roomRef =
@@ -739,53 +726,42 @@
               `rooms/${roomCode}`
             );
 
-          const transactionResult =
-            await runTransaction(
-              roomRef,
-              function(currentRoom) {
-                /*
-                  房號已存在，放棄這次交易，
-                  再產生另一個房號。
-                */
-                if (currentRoom !== null) {
-                  return;
-                }
+          const snapshot =
+            await get(roomRef);
 
-                return {
-                  hostId:
-                    currentUser.uid,
-
-                  status:
-                    "waiting",
-
-                  maxPlayers:
-                    4,
-
-                  createdAt:
-                    Date.now(),
-
-                  players: {
-                    [currentUser.uid]: {
-                      name:
-                        playerName,
-
-                      joinedAt:
-                        Date.now()
-                    }
-                  }
-                };
-              },
-              {
-                applyLocally: false
-              }
-            );
-
-          if (transactionResult.committed) {
-            roomCreated = true;
-
-            await enterRoom(roomCode);
-            break;
+          if (snapshot.exists()) {
+            continue;
           }
+
+          await set(
+            roomRef,
+            {
+              hostId:
+                currentUser.uid,
+
+              status:
+                "waiting",
+
+              maxPlayers:
+                4,
+
+              createdAt:
+                Date.now(),
+
+              players: {
+                [currentUser.uid]: {
+                  name:
+                    playerName,
+
+                  joinedAt:
+                    Date.now()
+                }
+              }
+            }
+          );
+
+          roomCreated = true;
+          break;
         }
 
         if (!roomCreated) {
@@ -793,11 +769,10 @@
             "暫時無法產生房號，請再試一次。"
           );
         }
+
+        await enterRoom(roomCode);
       } catch (error) {
-        console.error(
-          "建立房間失敗：",
-          error
-        );
+        console.error(error);
 
         setStatus(
           homeStatus,
@@ -809,179 +784,174 @@
       }
     }
 
-async function joinRoom() {
-  const playerName = validatePlayerName();
+    async function joinRoom() {
+      const playerName =
+        validatePlayerName();
 
-  if (!playerName || !currentUser) {
-    return;
-  }
+      if (!playerName || !currentUser) {
+        return;
+      }
 
-  const roomCode = roomCodeInput.value
-    .replace(/\D/g, "")
-    .slice(0, 6);
+      const roomCode =
+        roomCodeInput.value
+          .replace(/\D/g, "")
+          .slice(0, 6);
 
-  roomCodeInput.value = roomCode;
+      roomCodeInput.value =
+        roomCode;
 
-  if (roomCode.length !== 6) {
-    setStatus(
-      homeStatus,
-      "請輸入完整的六位數房號。",
-      "error"
-    );
+      if (roomCode.length !== 6) {
+        setStatus(
+          homeStatus,
+          "請輸入完整的六位數房號。",
+          "error"
+        );
 
-    roomCodeInput.focus();
-    return;
-  }
+        roomCodeInput.focus();
+        return;
+      }
 
-  setHomeButtonsDisabled(true);
+      setHomeButtonsDisabled(true);
 
-  setStatus(
-    homeStatus,
-    "正在加入房間……"
-  );
-
-  try {
-    const roomRef = ref(
-      database,
-      `rooms/${roomCode}`
-    );
-
-    const roomSnapshot = await get(roomRef);
-
-    if (!roomSnapshot.exists()) {
-      throw new Error(
-        "找不到這個房間，請確認房號是否正確。"
+      setStatus(
+        homeStatus,
+        "正在加入房間……"
       );
-    }
 
-    const roomData = roomSnapshot.val();
+      try {
+        const roomRef =
+          ref(
+            database,
+            `rooms/${roomCode}`
+          );
 
-    if (roomData.status !== "waiting") {
-      throw new Error(
-        "這個房間已經開始遊戲，無法加入。"
-      );
-    }
+        const roomSnapshot =
+          await get(roomRef);
 
-    /*
-      只針對玩家名單執行交易，
-      避免整個房間資料交易被不明原因中止。
-    */
-    const playersRef = ref(
-      database,
-      `rooms/${roomCode}/players`
-    );
-
-    let failureReason = "";
-
-    const transactionResult = await runTransaction(
-      playersRef,
-      function(players) {
-        const currentPlayers = players || {};
-
-        /*
-          同一個匿名帳號重新加入時，
-          只更新名字，不重複增加人數。
-        */
-        if (currentPlayers[currentUser.uid]) {
-          currentPlayers[currentUser.uid] = {
-            ...currentPlayers[currentUser.uid],
-            name: playerName
-          };
-
-          return currentPlayers;
+        if (!roomSnapshot.exists()) {
+          throw new Error(
+            "找不到這個房間，請確認房號。"
+          );
         }
 
-        const playerAmount =
-          Object.keys(currentPlayers).length;
+        const roomData =
+          roomSnapshot.val();
 
-        if (playerAmount >= 4) {
-          failureReason = "room-full";
-          return;
+        if (roomData.status !== "waiting") {
+          throw new Error(
+            "這個房間已經開始遊戲。"
+          );
         }
 
-        currentPlayers[currentUser.uid] = {
-          name: playerName,
-          joinedAt: Date.now()
-        };
+        const playersRef =
+          ref(
+            database,
+            `rooms/${roomCode}/players`
+          );
 
-        return currentPlayers;
-      },
-      {
-        applyLocally: false
-      }
-    );
+        let roomWasFull = false;
 
-    if (!transactionResult.committed) {
-      if (failureReason === "room-full") {
-        throw new Error(
-          "房間已滿，最多只能四人。"
+        const result =
+          await runTransaction(
+            playersRef,
+            function(players) {
+              const currentPlayers =
+                players || {};
+
+              if (
+                currentPlayers[
+                  currentUser.uid
+                ]
+              ) {
+                currentPlayers[
+                  currentUser.uid
+                ].name =
+                  playerName;
+
+                return currentPlayers;
+              }
+
+              const amount =
+                Object.keys(
+                  currentPlayers
+                ).length;
+
+              if (amount >= 4) {
+                roomWasFull = true;
+                return;
+              }
+
+              currentPlayers[
+                currentUser.uid
+              ] = {
+                name:
+                  playerName,
+
+                joinedAt:
+                  Date.now()
+              };
+
+              return currentPlayers;
+            },
+            {
+              applyLocally: false
+            }
+          );
+
+        if (!result.committed) {
+          if (roomWasFull) {
+            throw new Error(
+              "房間已滿，最多四人。"
+            );
+          }
+
+          const latestRoomSnapshot =
+            await get(roomRef);
+
+          if (!latestRoomSnapshot.exists()) {
+            throw new Error(
+              "房間已被關閉。"
+            );
+          }
+
+          const latestRoom =
+            latestRoomSnapshot.val();
+
+          const latestPlayers =
+            latestRoom.players || {};
+
+          if (
+            Object.keys(
+              latestPlayers
+            ).length >= 4
+          ) {
+            throw new Error(
+              "房間已滿，最多四人。"
+            );
+          }
+
+          throw new Error(
+            "加入房間時發生同步衝突，請再按一次加入。"
+          );
+        }
+
+        await enterRoom(roomCode);
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          homeStatus,
+          `加入失敗：${error.message}`,
+          "error"
         );
+
+        setHomeButtonsDisabled(false);
       }
-
-      /*
-        重新讀取資料，顯示真正原因。
-      */
-      const latestRoomSnapshot =
-        await get(roomRef);
-
-      if (!latestRoomSnapshot.exists()) {
-        throw new Error(
-          "房間已被關閉。"
-        );
-      }
-
-      const latestRoom =
-        latestRoomSnapshot.val();
-
-      if (latestRoom.status !== "waiting") {
-        throw new Error(
-          "房間已經開始遊戲。"
-        );
-      }
-
-      const latestPlayers =
-        latestRoom.players || {};
-
-      if (
-        Object.keys(latestPlayers).length >= 4
-      ) {
-        throw new Error(
-          "房間已滿，最多只能四人。"
-        );
-      }
-
-      throw new Error(
-        "加入交易未完成，請重新整理後再試一次。"
-      );
     }
-
-    await enterRoom(roomCode);
-
-  } catch (error) {
-    console.error(
-      "加入房間失敗：",
-      error
-    );
-
-    setStatus(
-      homeStatus,
-      `加入失敗：${error.message}`,
-      "error"
-    );
-
-    setHomeButtonsDisabled(false);
-  }
-}
 
     async function enterRoom(roomCode) {
       currentRoomCode =
         roomCode;
-
-      currentRoomRef =
-        ref(
-          database,
-          `rooms/${roomCode}`
-        );
 
       roomCodeDisplay.textContent =
         roomCode;
@@ -999,17 +969,19 @@ async function joinRoom() {
         ""
       );
 
-      /*
-        關閉上一個房間的監聽，
-        避免重複執行。
-      */
       if (roomUnsubscribe) {
         roomUnsubscribe();
       }
 
+      const roomRef =
+        ref(
+          database,
+          `rooms/${roomCode}`
+        );
+
       roomUnsubscribe =
         onValue(
-          currentRoomRef,
+          roomRef,
           function(snapshot) {
             if (!snapshot.exists()) {
               handleRoomRemoved();
@@ -1021,10 +993,7 @@ async function joinRoom() {
             );
           },
           function(error) {
-            console.error(
-              "讀取房間失敗：",
-              error
-            );
+            console.error(error);
 
             setStatus(
               lobbyStatus,
@@ -1034,10 +1003,6 @@ async function joinRoom() {
           }
         );
 
-      /*
-        關閉瀏覽器、斷線或離開網站時，
-        自動移除自己的玩家資料。
-      */
       const playerRef =
         ref(
           database,
@@ -1056,12 +1021,14 @@ async function joinRoom() {
 
       const playerEntries =
         Object.entries(players)
-          .sort(function(a, b) {
-            return (
-              a[1].joinedAt -
-              b[1].joinedAt
-            );
-          });
+          .sort(
+            function(a, b) {
+              return (
+                (a[1].joinedAt || 0) -
+                (b[1].joinedAt || 0)
+              );
+            }
+          );
 
       playerCount.textContent =
         `${playerEntries.length} / 4`;
@@ -1070,19 +1037,19 @@ async function joinRoom() {
 
       playerEntries.forEach(
         function([playerId, player]) {
-          const playerElement =
-            document.createElement("div");
-
-          playerElement.className =
-            "player";
-
           const isHost =
             playerId === room.hostId;
 
           const isCurrentPlayer =
             playerId === currentUser.uid;
 
-          playerElement.innerHTML = `
+          const item =
+            document.createElement("div");
+
+          item.className =
+            "player";
+
+          item.innerHTML = `
             <div class="player-main">
               <div class="avatar">
                 ${isHost ? "👑" : "🙂"}
@@ -1093,7 +1060,7 @@ async function joinRoom() {
 
                 ${
                   isCurrentPlayer
-                    ? `<span class="player-you">你</span>`
+                    ? '<span class="player-you">你</span>'
                     : ""
                 }
               </div>
@@ -1101,19 +1068,17 @@ async function joinRoom() {
 
             ${
               isHost
-                ? `<span class="host-badge">房主</span>`
+                ? '<span class="host-badge">房主</span>'
                 : ""
             }
           `;
 
-          playerElement
+          item
             .querySelector(".player-name")
             .textContent =
-              player.name;
+              player.name || "未命名玩家";
 
-          playerList.appendChild(
-            playerElement
-          );
+          playerList.appendChild(item);
         }
       );
 
@@ -1125,7 +1090,7 @@ async function joinRoom() {
           "等待至少一位朋友加入……";
       } else if (playerEntries.length < 4) {
         lobbyMessage.textContent =
-          "已可開始遊戲，也可以繼續等待其他朋友。";
+          "已可開始遊戲，也可以繼續等待朋友。";
       } else {
         lobbyMessage.textContent =
           "房間已滿，四位玩家均已到齊。";
@@ -1169,18 +1134,63 @@ async function joinRoom() {
           await disconnectOperation.cancel();
         }
 
-        const playerRef =
+        const roomRef =
           ref(
             database,
-            `rooms/${currentRoomCode}/players/${currentUser.uid}`
+            `rooms/${currentRoomCode}`
           );
 
-        await remove(playerRef);
+        const roomSnapshot =
+          await get(roomRef);
+
+        if (roomSnapshot.exists()) {
+          const room =
+            roomSnapshot.val();
+
+          const playerRef =
+            ref(
+              database,
+              `rooms/${currentRoomCode}/players/${currentUser.uid}`
+            );
+
+          await remove(playerRef);
+
+          if (room.hostId === currentUser.uid) {
+            const latestSnapshot =
+              await get(roomRef);
+
+            if (latestSnapshot.exists()) {
+              const latestRoom =
+                latestSnapshot.val();
+
+              const remainingPlayers =
+                Object.entries(
+                  latestRoom.players || {}
+                ).sort(
+                  function(a, b) {
+                    return (
+                      (a[1].joinedAt || 0) -
+                      (b[1].joinedAt || 0)
+                    );
+                  }
+                );
+
+              if (remainingPlayers.length === 0) {
+                await remove(roomRef);
+              } else {
+                await update(
+                  roomRef,
+                  {
+                    hostId:
+                      remainingPlayers[0][0]
+                  }
+                );
+              }
+            }
+          }
+        }
       } catch (error) {
-        console.error(
-          "離開房間失敗：",
-          error
-        );
+        console.error(error);
       } finally {
         resetToHome();
       }
@@ -1206,7 +1216,6 @@ async function joinRoom() {
       }
 
       currentRoomCode = null;
-      currentRoomRef = null;
       disconnectOperation = null;
 
       playerList.innerHTML = "";
@@ -1242,10 +1251,13 @@ async function joinRoom() {
         copyRoomButton.textContent =
           "已複製";
 
-        setTimeout(function() {
-          copyRoomButton.textContent =
-            "複製房號";
-        }, 1500);
+        setTimeout(
+          function() {
+            copyRoomButton.textContent =
+              "複製房號";
+          },
+          1500
+        );
       } catch (error) {
         setStatus(
           lobbyStatus,
@@ -1254,6 +1266,16 @@ async function joinRoom() {
         );
       }
     }
+
+    roomCodeInput.addEventListener(
+      "input",
+      function() {
+        roomCodeInput.value =
+          roomCodeInput.value
+            .replace(/\D/g, "")
+            .slice(0, 6);
+      }
+    );
 
     createRoomButton.addEventListener(
       "click",
@@ -1275,31 +1297,17 @@ async function joinRoom() {
       copyRoomCode
     );
 
-    roomCodeInput.addEventListener(
-      "input",
-      function() {
-        roomCodeInput.value =
-          roomCodeInput.value
-            .replace(/\D/g, "")
-            .slice(0, 6);
-      }
-    );
-
     startGameButton.addEventListener(
       "click",
       function() {
         setStatus(
           lobbyStatus,
-          "第一堂先完成房間系統，下一堂才會啟動身份抽籤。",
+          "房間系統成功，下一步再加入身份與題目。",
           "success"
         );
       }
     );
 
-    /*
-      一開始先鎖住按鈕，
-      等匿名登入成功才開放。
-    */
     setHomeButtonsDisabled(true);
 
     initializeAuthentication();
